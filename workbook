@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Воркбук · Твой контент-план на 7 дней</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #FFFFFF; --bg-soft: #F5F6F7; --bg-muted: #EDEEF0;
+    --ink: #1A1A1A; --ink-2: #4A4D52; --ink-3: #8A8E94; --line: #E4E6E9;
+    --accent: #C4F542; --accent-strong: #B8E83D; --accent-ink: #0F1A00;
+    --radius-sm: 10px; --radius-md: 16px; --radius-lg: 24px; --radius-pill: 999px;
+    --font-display: 'Unbounded', ui-sans-serif, system-ui, sans-serif;
+    --font-body: 'Manrope', ui-sans-serif, system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  }
+  html, body { background: var(--bg); }
+  body {
+    font-family: var(--font-body);
+    color: var(--ink);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: 760px; margin: 0 auto; padding: 48px 24px 100px; }
+
+  /* Header */
+  .header { margin-bottom: 40px; padding-bottom: 28px; border-bottom: 1px solid var(--line); }
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--ink-3); margin-bottom: 12px;
+  }
+  h1 {
+    font-family: var(--font-display); font-weight: 500;
+    font-size: clamp(26px, 4.4vw, 36px);
+    line-height: 1.15; letter-spacing: -0.02em; margin-bottom: 12px;
+  }
+  .subtitle { color: var(--ink-2); font-size: 16px; margin-bottom: 14px; }
+  .meta { display: flex; gap: 8px; flex-wrap: wrap; }
+  .meta-chip {
+    font-family: var(--font-mono); font-size: 11px;
+    color: var(--ink-2); background: var(--bg-muted);
+    padding: 5px 12px; border-radius: var(--radius-pill);
+  }
+
+  /* Section */
+  .section { margin-bottom: 44px; }
+  .section-num {
+    display: inline-block;
+    font-family: var(--font-mono); font-size: 11px;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--ink-3); margin-bottom: 8px;
+  }
+  .section h2 {
+    font-family: var(--font-display); font-weight: 500;
+    font-size: 22px; line-height: 1.25;
+    letter-spacing: -0.01em; margin-bottom: 8px;
+  }
+  .section-hint {
+    color: var(--ink-2); font-size: 14px; margin-bottom: 16px;
+  }
+
+  /* Tip box */
+  .tip {
+    background: var(--bg-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    padding: 12px 16px; margin: 12px 0 16px;
+    font-size: 14px; color: var(--ink-2);
+  }
+  .tip strong { color: var(--ink); }
+
+  /* Platforms grid */
+  .platforms-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .pf-card {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    padding: 12px 14px;
+    cursor: pointer;
+    transition: border-color .15s ease, background .15s ease;
+    user-select: none;
+  }
+  .pf-card:hover { border-color: var(--ink-3); }
+  .pf-card.is-active {
+    border-color: var(--accent);
+    background: var(--bg-soft);
+  }
+  .pf-card__name {
+    font-weight: 600; margin-bottom: 4px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .pf-check {
+    width: 18px; height: 18px; border-radius: 5px;
+    border: 1.5px solid var(--ink-3);
+    display: inline-flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: all .15s ease;
+  }
+  .pf-card.is-active .pf-check {
+    background: var(--accent); border-color: var(--accent);
+  }
+  .pf-card.is-active .pf-check::after {
+    content: "✓"; color: var(--accent-ink);
+    font-size: 12px; font-weight: 700;
+  }
+  .pf-card__hint {
+    font-size: 12px; color: var(--ink-3); line-height: 1.4;
+  }
+
+  /* Format chips */
+  .fmt-block { margin-top: 16px; padding-top: 12px; border-top: 1px dashed var(--line); }
+  .fmt-platform-label {
+    font-family: var(--font-mono); font-size: 11px;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--ink-3); margin-bottom: 8px;
+  }
+  .fmt-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .fmt-chip {
+    border: 1px solid var(--line); background: var(--bg);
+    padding: 6px 12px; border-radius: var(--radius-pill);
+    font-size: 13px; cursor: pointer; user-select: none;
+    transition: all .15s ease;
+  }
+  .fmt-chip:hover { border-color: var(--ink-3); }
+  .fmt-chip.is-active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-ink);
+    font-weight: 500;
+  }
+  .fmt-empty {
+    color: var(--ink-3); font-size: 14px; font-style: italic;
+    padding: 12px 0;
+  }
+
+  /* Plan grid */
+  .plan-day {
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    gap: 12px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--line);
+    align-items: flex-start;
+  }
+  .plan-day:last-child { border-bottom: none; }
+  .plan-day-label {
+    font-family: var(--font-display);
+    font-weight: 500; font-size: 14px;
+    color: var(--ink);
+    padding-top: 9px;
+  }
+  .plan-day-label .day-rec {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--ink-3);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-top: 4px;
+    font-weight: 400;
+  }
+  .plan-day textarea {
+    width: 100%; min-height: 44px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    font-family: var(--font-body);
+    font-size: 14px; line-height: 1.4;
+    color: var(--ink);
+    resize: vertical;
+    transition: border-color .15s ease;
+  }
+  .plan-day textarea:focus {
+    outline: none;
+    border-color: var(--ink);
+  }
+
+  .counter {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 8px 14px;
+    background: var(--bg-soft);
+    border-radius: var(--radius-pill);
+    margin: 16px 0 0;
+    font-size: 14px;
+  }
+  .counter strong { font-family: var(--font-display); }
+  .counter.is-good { background: var(--accent); color: var(--accent-ink); }
+  .counter.is-warn { background: #FFE9C4; color: #6B4A00; }
+
+  /* Bank list */
+  .bank-list { margin-top: 12px; }
+  .bank-row {
+    display: grid;
+    grid-template-columns: 30px 1fr;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .bank-num {
+    font-family: var(--font-mono); font-size: 12px;
+    color: var(--ink-3); text-align: right;
+  }
+  .bank-row input {
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    padding: 9px 12px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--ink);
+    transition: border-color .15s ease;
+  }
+  .bank-row input:focus {
+    outline: none;
+    border-color: var(--ink);
+  }
+
+  /* Bottom action */
+  .bottom-action {
+    margin-top: 56px;
+    padding: 28px 24px;
+    background: var(--ink);
+    color: #FFFFFF;
+    border-radius: var(--radius-md);
+    text-align: center;
+  }
+  .bottom-action__label {
+    font-family: var(--font-mono);
+    font-size: 11px; letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+  .bottom-action__title {
+    font-family: var(--font-display);
+    font-weight: 500; font-size: 22px;
+    line-height: 1.3; letter-spacing: -0.01em;
+    color: #FFFFFF;
+    margin-bottom: 14px;
+  }
+  .bottom-action__hint {
+    color: rgba(255,255,255,0.75);
+    font-size: 14px;
+    margin-bottom: 20px;
+    max-width: 480px;
+    margin-left: auto; margin-right: auto;
+  }
+  .btn-download {
+    display: inline-block;
+    background: var(--accent);
+    color: var(--accent-ink);
+    font-family: var(--font-body);
+    font-weight: 600; font-size: 15px;
+    border: none;
+    padding: 14px 28px;
+    border-radius: var(--radius-pill);
+    cursor: pointer;
+    transition: background .15s ease, transform .05s ease;
+  }
+  .btn-download:hover { background: var(--accent-strong); }
+  .btn-download:active { transform: scale(0.98); }
+
+  @media (max-width: 540px) {
+    .wrap { padding: 32px 18px 80px; }
+    h1 { font-size: 24px; }
+    .section h2 { font-size: 19px; }
+    .plan-day { grid-template-columns: 1fr; gap: 6px; }
+    .plan-day-label { padding-top: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header class="header">
+    <div class="eyebrow">Урок 2 · Воркбук</div>
+    <h1>Твой контент-план на 7 дней</h1>
+    <p class="subtitle">Не конспект и не теория. Рабочий файл, который ты заполняешь прямо сейчас и забираешь себе.</p>
+    <div class="meta">
+      <span class="meta-chip">10–15 минут</span>
+      <span class="meta-chip">Скачивается в файл</span>
+    </div>
+  </header>
+
+  <!-- Шаг 1. Площадки -->
+  <section class="section">
+    <span class="section-num">Шаг 1 из 4</span>
+    <h2>Где ты сейчас живёшь</h2>
+    <p class="section-hint">Отметь площадки, на которых ты планируешь публиковать контент в ближайшую неделю. Можно несколько.</p>
+
+    <div class="tip">
+      <strong>Подсказка из урока:</strong> грамотный блогер работает сразу на двух площадках — одна для роста, другая для удержания текущей аудитории. Не распыляйся на все сразу — выбери 1–2.
+    </div>
+
+    <div class="platforms-grid" id="platforms">
+      <!-- генерируется JS -->
+    </div>
+  </section>
+
+  <!-- Шаг 2. Форматы -->
+  <section class="section">
+    <span class="section-num">Шаг 2 из 4</span>
+    <h2>Какие форматы тебе подходят</h2>
+    <p class="section-hint">Под каждой выбранной площадкой — отметь форматы, которые ты готов делать регулярно. 2–3 формата на площадку — оптимум.</p>
+
+    <div class="tip">
+      <strong>Подсказка из урока:</strong> один формат — для роста (короткие видео, рилсы, клипы). Один — для удержания (посты, сторис, кружочки). Без коротких видео сейчас аудитория растёт очень медленно.
+    </div>
+
+    <div id="formats">
+      <div class="fmt-empty">Сначала выбери площадки на Шаге 1 — тогда здесь появятся форматы для каждой.</div>
+    </div>
+  </section>
+
+  <!-- Шаг 3. План на 7 дней -->
+  <section class="section">
+    <span class="section-num">Шаг 3 из 4</span>
+    <h2>Твой план на 7 дней</h2>
+    <p class="section-hint">Напиши короткую идею для каждого дня — что ты выложишь и куда. Не нужно расписывать сценарий, достаточно темы. На дни, в которые ты не планируешь постить — оставь пусто.</p>
+
+    <div class="tip">
+      <strong>Норма из урока:</strong> минимум 4 публикации в неделю на основной площадке. Если хочешь быстрого роста — каждый день. Меньше 4 — алгоритмы начинают забывать тебя.
+    </div>
+
+    <div id="plan">
+      <!-- генерируется JS -->
+    </div>
+
+    <div class="counter" id="counter">
+      Заполнено: <strong id="counterFilled">0</strong> из 7 дней
+    </div>
+  </section>
+
+  <!-- Шаг 4. Банк идей -->
+  <section class="section">
+    <span class="section-num">Шаг 4 из 4</span>
+    <h2>Твой банк идей</h2>
+    <p class="section-hint">Это копилка на будущее, не на одну неделю. Записывай идеи, которые приходят в голову, чтобы было к чему вернуться, когда вдохновение закончится.</p>
+
+    <div class="tip">
+      <strong>Подсказка из урока:</strong> Настя держит банк идей в заметке в телефоне. Идея пришла — сразу записала. Иначе к утру забудется. Не нужно сейчас писать 10 идей — напиши столько, сколько есть.
+    </div>
+
+    <div class="bank-list" id="bank">
+      <!-- генерируется JS -->
+    </div>
+  </section>
+
+  <!-- Action -->
+  <div class="bottom-action">
+    <div class="bottom-action__label">Сохрани свою работу</div>
+    <div class="bottom-action__title">Скачай заполненный воркбук</div>
+    <div class="bottom-action__hint">Файл сохранится у тебя на компьютере или в телефоне. Открывай его, когда нужна идея, или возвращайся к нему перед каждой новой неделей контента.</div>
+    <button class="btn-download" onclick="downloadPlan()">📄 Скачать мой контент-план</button>
+  </div>
+
+</div>
+
+<script>
+// === ДАННЫЕ ===
+const PLATFORMS = [
+  {
+    id: 'vk', name: 'ВКонтакте',
+    hint: 'Базовая площадка. Без VPN, полный набор форматов.',
+    formats: ['Посты с текстом', 'Посты с фото', 'Клипы (короткие видео)', 'Сторис', 'Длинные видео']
+  },
+  {
+    id: 'dzen', name: 'Яндекс Дзен',
+    hint: 'Для текстов. Алгоритм сам ищет читателей.',
+    formats: ['Длинные статьи (1500–5000 знаков)', 'Короткие заметки (до 1000 знаков)', 'Видео-обзоры']
+  },
+  {
+    id: 'tg', name: 'Telegram',
+    hint: 'Для текстов и аудио. Замедляется, но аудитория есть.',
+    formats: ['Короткие посты', 'Длинные посты', 'Кружочки (видеосообщения)', 'Голосовые сообщения']
+  },
+  {
+    id: 'rt', name: 'Rutube',
+    hint: 'Альтернатива YouTube. Низкая конкуренция.',
+    formats: ['Длинные горизонтальные видео', 'Короткие вертикальные (Shorts)']
+  },
+  {
+    id: 'max', name: 'Max',
+    hint: 'Российский мессенджер. Растёт быстро.',
+    formats: ['Короткие посты', 'Длинные посты', 'Голосовые сообщения']
+  },
+  {
+    id: 'tt', name: 'TikTok',
+    hint: 'Для охвата. Без прямой монетизации.',
+    formats: ['Короткие вертикальные видео']
+  },
+  {
+    id: 'ig', name: 'Instagram (с VPN)',
+    hint: 'Только с VPN. Нестабильно для основы.',
+    formats: ['Reels (короткие видео)', 'Посты-карусели', 'Сторис']
+  },
+  {
+    id: 'yt', name: 'YouTube (с VPN)',
+    hint: 'Только с VPN. Длинный контент работает хорошо.',
+    formats: ['Длинные видео', 'Shorts (короткие видео)']
+  }
+];
+
+// Рекомендации по дням
+const DAY_RECS = [
+  '', // Пн — без рекомендации, нейтральный день
+  'Хорошо для коротких видео', // Вт
+  'Удачный день для текстов', // Ср
+  '', // Чт
+  'Перед выходными — лёгкий контент', // Пт
+  'Выходные — закулисье, личное', // Сб
+  'Подведи итоги недели' // Вс
+];
+const DAYS = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'];
+
+// === STATE ===
+const state = {
+  selectedPlatforms: new Set(),
+  selectedFormats: {}, // {platformId: Set([formatName])}
+  plan: Array(7).fill(''),
+  bank: Array(10).fill('')
+};
+
+// === RENDER ===
+function renderPlatforms() {
+  const grid = document.getElementById('platforms');
+  grid.innerHTML = PLATFORMS.map(p => `
+    <div class="pf-card" data-id="${p.id}">
+      <div class="pf-card__name">
+        <span class="pf-check"></span>
+        <span>${p.name}</span>
+      </div>
+      <div class="pf-card__hint">${p.hint}</div>
+    </div>
+  `).join('');
+
+  grid.querySelectorAll('.pf-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const id = card.dataset.id;
+      if (state.selectedPlatforms.has(id)) {
+        state.selectedPlatforms.delete(id);
+        delete state.selectedFormats[id];
+        card.classList.remove('is-active');
+      } else {
+        state.selectedPlatforms.add(id);
+        state.selectedFormats[id] = new Set();
+        card.classList.add('is-active');
+      }
+      renderFormats();
+    });
+  });
+}
+
+function renderFormats() {
+  const container = document.getElementById('formats');
+
+  if (state.selectedPlatforms.size === 0) {
+    container.innerHTML = '<div class="fmt-empty">Сначала выбери площадки на Шаге 1 — тогда здесь появятся форматы для каждой.</div>';
+    return;
+  }
+
+  const blocks = Array.from(state.selectedPlatforms).map(pid => {
+    const platform = PLATFORMS.find(p => p.id === pid);
+    const selected = state.selectedFormats[pid] || new Set();
+    return `
+      <div class="fmt-block">
+        <div class="fmt-platform-label">${platform.name}</div>
+        <div class="fmt-chips">
+          ${platform.formats.map(f => `
+            <div class="fmt-chip ${selected.has(f) ? 'is-active' : ''}" data-pid="${pid}" data-fmt="${f}">${f}</div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  container.innerHTML = blocks;
+
+  container.querySelectorAll('.fmt-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const pid = chip.dataset.pid;
+      const fmt = chip.dataset.fmt;
+      if (!state.selectedFormats[pid]) state.selectedFormats[pid] = new Set();
+      const set = state.selectedFormats[pid];
+      if (set.has(fmt)) {
+        set.delete(fmt);
+        chip.classList.remove('is-active');
+      } else {
+        set.add(fmt);
+        chip.classList.add('is-active');
+      }
+    });
+  });
+}
+
+function renderPlan() {
+  const container = document.getElementById('plan');
+  container.innerHTML = DAYS.map((d, i) => `
+    <div class="plan-day">
+      <div class="plan-day-label">
+        ${d}
+        ${DAY_RECS[i] ? `<span class="day-rec">${DAY_RECS[i]}</span>` : ''}
+      </div>
+      <textarea
+        data-idx="${i}"
+        placeholder="Напиши идею для этого дня и куда выкладываешь..."></textarea>
+    </div>
+  `).join('');
+
+  container.querySelectorAll('textarea').forEach(t => {
+    t.addEventListener('input', (e) => {
+      const idx = +e.target.dataset.idx;
+      state.plan[idx] = e.target.value;
+      updateCounter();
+    });
+  });
+}
+
+function renderBank() {
+  const container = document.getElementById('bank');
+  container.innerHTML = Array.from({length: 10}, (_, i) => `
+    <div class="bank-row">
+      <div class="bank-num">${i + 1}.</div>
+      <input type="text"
+        data-idx="${i}"
+        placeholder="Идея для контента...">
+    </div>
+  `).join('');
+
+  container.querySelectorAll('input').forEach(inp => {
+    inp.addEventListener('input', (e) => {
+      const idx = +e.target.dataset.idx;
+      state.bank[idx] = e.target.value;
+    });
+  });
+}
+
+function updateCounter() {
+  const filled = state.plan.filter(d => d.trim().length > 0).length;
+  const counter = document.getElementById('counter');
+  document.getElementById('counterFilled').textContent = filled;
+  counter.classList.remove('is-good', 'is-warn');
+  if (filled >= 4) counter.classList.add('is-good');
+  else if (filled > 0) counter.classList.add('is-warn');
+}
+
+// === DOWNLOAD ===
+function downloadPlan() {
+  const today = new Date().toLocaleDateString('ru-RU');
+
+  // Собираем платформы и форматы
+  const pfNames = Array.from(state.selectedPlatforms).map(id => {
+    const p = PLATFORMS.find(x => x.id === id);
+    const fmts = state.selectedFormats[id];
+    const fmtList = fmts && fmts.size ? Array.from(fmts).join(', ') : 'не выбраны';
+    return { name: p.name, formats: fmtList };
+  });
+
+  // План на 7 дней
+  const planRows = state.plan.map((text, i) => ({
+    day: DAYS[i],
+    text: text.trim() || '—'
+  }));
+
+  const filledCount = state.plan.filter(d => d.trim().length > 0).length;
+
+  // Банк идей
+  const bankFilled = state.bank.filter(b => b.trim().length > 0);
+
+  // Генерируем HTML файл для скачивания
+  const html = `<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Мой контент-план — ${today}</title>
+<style>
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    color: #1A1A1A; line-height: 1.6; max-width: 720px;
+    margin: 0 auto; padding: 40px 30px; background: #fff;
+  }
+  h1 { font-size: 26px; margin-bottom: 8px; }
+  .meta { color: #8A8E94; font-size: 13px; margin-bottom: 32px; padding-bottom: 20px; border-bottom: 1px solid #E4E6E9; }
+  h2 { font-size: 18px; margin-top: 36px; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 1px solid #E4E6E9; }
+  .platform-row { margin-bottom: 12px; }
+  .platform-row strong { display: block; margin-bottom: 2px; }
+  .platform-row span { color: #4A4D52; font-size: 14px; }
+  .day-row {
+    padding: 12px 0; border-bottom: 1px solid #F0F0F0;
+    display: grid; grid-template-columns: 130px 1fr; gap: 16px;
+  }
+  .day-row strong { font-weight: 600; }
+  .day-row .text { color: #4A4D52; }
+  .day-row .text.empty { color: #ccc; font-style: italic; }
+  .bank-item { padding: 6px 0; color: #4A4D52; }
+  .bank-item::before { content: "• "; color: #C4F542; font-weight: bold; }
+  .stats {
+    background: #F5F6F7; padding: 14px 18px;
+    border-radius: 10px; margin: 16px 0; font-size: 14px;
+  }
+  .stats strong { color: #1A1A1A; }
+  .footer {
+    margin-top: 50px; padding-top: 20px;
+    border-top: 1px solid #E4E6E9;
+    color: #8A8E94; font-size: 12px; text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<h1>Мой контент-план на 7 дней</h1>
+<div class="meta">Создан ${today} в воркбуке Урока 2 тест-драйва · FitStars</div>
+
+<h2>Мои площадки</h2>
+${pfNames.length ? pfNames.map(p => `
+  <div class="platform-row">
+    <strong>${p.name}</strong>
+    <span>Форматы: ${p.formats}</span>
+  </div>
+`).join('') : '<p style="color: #8A8E94;">Площадки не выбраны</p>'}
+
+<h2>План на неделю</h2>
+<div class="stats">Заполнено: <strong>${filledCount} из 7 дней</strong>${filledCount < 4 ? ' &mdash; меньше нормы (минимум 4 публикации в неделю)' : ' &mdash; норма выполнена ✓'}</div>
+${planRows.map(r => `
+  <div class="day-row">
+    <strong>${r.day}</strong>
+    <div class="text ${r.text === '—' ? 'empty' : ''}">${r.text}</div>
+  </div>
+`).join('')}
+
+<h2>Банк идей</h2>
+${bankFilled.length ? bankFilled.map(b => `
+  <div class="bank-item">${b}</div>
+`).join('') : '<p style="color: #8A8E94;">Идеи пока не записаны</p>'}
+
+<div class="footer">
+  Курс «Блогер с нуля» · FitStars · Возвращайся к этому файлу перед каждой новой неделей
+</div>
+
+</body>
+</html>`;
+
+  const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `Мой_контент-план_${today.replace(/\./g, '-')}.html`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// Init
+renderPlatforms();
+renderPlan();
+renderBank();
+updateCounter();
+</script>
+
+</body>
+</html>
