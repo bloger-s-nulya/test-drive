@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Квиз: Твоя платформа-2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #FFFFFF; --bg-soft: #F5F6F7; --bg-muted: #EDEEF0;
+    --ink: #1A1A1A; --ink-2: #4A4D52; --ink-3: #8A8E94; --line: #E4E6E9;
+    --accent: #C4F542; --accent-strong: #B8E83D; --accent-ink: #0F1A00;
+    --radius-sm: 10px; --radius-md: 16px; --radius-lg: 24px; --radius-pill: 999px;
+    --shadow-sm: 0 1px 2px rgba(16,18,20,.04), 0 1px 1px rgba(16,18,20,.03);
+    --shadow-md: 0 4px 16px rgba(16,18,20,.06);
+    --font-display: 'Unbounded', ui-sans-serif, system-ui, sans-serif;
+    --font-body: 'Manrope', ui-sans-serif, system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  }
+  html, body { margin: 0; padding: 0; background: var(--bg); }
+  body {
+    font-family: var(--font-body); color: var(--ink); font-size: 16px;
+    line-height: 1.6; -webkit-font-smoothing: antialiased; min-height: 100vh;
+  }
+
+  /* ——— Header ——— */
+  .quiz-header {
+    border-bottom: 1px solid var(--line);
+    padding: 18px 24px 0;
+    background: var(--bg);
+    position: sticky; top: 0; z-index: 10;
+  }
+  .hdr-inner { max-width: 680px; margin: 0 auto; }
+  .hdr-row {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; margin-bottom: 12px;
+  }
+  .hdr-label {
+    font-family: var(--font-mono); font-size: 11px;
+    letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3);
+  }
+  .progress-track {
+    height: 3px; background: var(--bg-muted); border-radius: 10px;
+    overflow: hidden; margin-bottom: -1px;
+  }
+  .progress-fill {
+    height: 100%; background: var(--accent); border-radius: 10px;
+    transition: width .4s cubic-bezier(.4,0,.2,1);
+  }
+
+  /* ——— Main ——— */
+  .qmain { max-width: 680px; margin: 0 auto; padding: 32px 24px 80px; }
+
+  /* ——— Screens ——— */
+  .screen { display: none; }
+  .screen.active { display: block; animation: qIn .28s ease; }
+  .screen.rev { animation: qInR .28s ease; }
+  .screen.out { animation: qOut .2s ease forwards; }
+  @keyframes qIn  { from { opacity:0; transform:translateX(20px); } to { opacity:1; transform:none; } }
+  @keyframes qOut { from { opacity:1; transform:none; } to { opacity:0; transform:translateX(-20px); } }
+  @keyframes qInR { from { opacity:0; transform:translateX(-20px); } to { opacity:1; transform:none; } }
+
+  /* ——— Question card ——— */
+  .qcard {
+    background: var(--bg); border: 1px solid var(--line);
+    border-radius: var(--radius-lg); padding: 28px 24px 24px;
+    box-shadow: var(--shadow-sm); margin-bottom: 16px;
+  }
+  .qeyebrow {
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--ink-3); margin-bottom: 12px; display: block;
+  }
+  .qtext {
+    font-family: var(--font-display); font-weight: 500;
+    font-size: clamp(17px, 3vw, 21px); line-height: 1.25; letter-spacing: -0.01em;
+    margin-bottom: 4px;
+  }
+  .qhint { font-size: 13px; color: var(--ink-3); margin-bottom: 20px; margin-top: 5px; line-height: 1.5; }
+
+  /* ——— Options: single ——— */
+  .options { display: grid; gap: 7px; }
+  .option {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 13px 16px;
+    background: var(--bg); border: 1.5px solid var(--line);
+    border-radius: var(--radius-md); cursor: pointer;
+    font-family: var(--font-body); font-size: 15px; color: var(--ink);
+    line-height: 1.5; text-align: left; width: 100%;
+    transition: border-color .15s, background .15s; -webkit-tap-highlight-color: transparent;
+  }
+  .option:hover { border-color: var(--ink-3); background: var(--bg-soft); }
+  .option.selected { border-color: var(--ink); background: var(--bg-soft); }
+  .option.selected .odot { background: var(--accent); border-color: var(--ink); }
+  .option.selected .odot::after {
+    content: ''; display: block; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--accent-ink); margin: auto;
+  }
+  .odot {
+    flex-shrink: 0; width: 20px; height: 20px; border-radius: 50%;
+    border: 1.5px solid var(--line); margin-top: 2px;
+    transition: border-color .15s, background .15s;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* ——— Options: multi (checkboxes) ——— */
+  .options-multi { display: grid; gap: 7px; }
+  .opt-multi {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 13px 16px;
+    background: var(--bg); border: 1.5px solid var(--line);
+    border-radius: var(--radius-md); cursor: pointer;
+    font-family: var(--font-body); font-size: 15px; color: var(--ink);
+    line-height: 1.5; text-align: left; width: 100%;
+    transition: border-color .15s, background .15s; -webkit-tap-highlight-color: transparent;
+  }
+  .opt-multi:hover { border-color: var(--ink-3); background: var(--bg-soft); }
+  .opt-multi.selected { border-color: var(--ink); background: var(--bg-soft); }
+  .cbox {
+    flex-shrink: 0; width: 20px; height: 20px; border-radius: 6px;
+    border: 1.5px solid var(--line); margin-top: 2px;
+    transition: border-color .15s, background .15s;
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+  }
+  .opt-multi.selected .cbox {
+    background: var(--accent); border-color: var(--ink);
+  }
+  .opt-multi.selected .cbox::after {
+    content: '';
+    position: absolute; left: 5px; top: 2px;
+    width: 5px; height: 9px;
+    border-right: 2px solid var(--accent-ink);
+    border-bottom: 2px solid var(--accent-ink);
+    transform: rotate(45deg);
+  }
+  .multi-note {
+    font-family: var(--font-mono); font-size: 11px; color: var(--ink-3);
+    letter-spacing: 0.05em; text-align: center;
+    margin-top: 10px;
+  }
+
+  /* ——— Nav ——— */
+  .navrow { display: flex; gap: 10px; align-items: center; }
+  .btn-back {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 12px 18px; background: transparent;
+    border: 1.5px solid var(--line); border-radius: var(--radius-pill);
+    font-family: var(--font-body); font-size: 14px; font-weight: 600; color: var(--ink-2);
+    cursor: pointer; transition: border-color .15s, color .15s; white-space: nowrap;
+  }
+  .btn-back:hover { border-color: var(--ink); color: var(--ink); }
+  .btn-back:disabled { opacity: .3; pointer-events: none; }
+  .btn-next {
+    flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 14px 28px; background: var(--accent); color: var(--accent-ink);
+    border: 1px solid transparent; border-radius: var(--radius-pill);
+    font-family: var(--font-body); font-size: 15px; font-weight: 600;
+    cursor: pointer; transition: background .15s, transform .08s;
+  }
+  .btn-next:hover { background: var(--accent-strong); }
+  .btn-next:active { transform: translateY(1px); }
+  .btn-next:disabled { opacity: .35; pointer-events: none; }
+
+  /* ——— Result ——— */
+  .result-card {
+    background: var(--bg); border: 1px solid var(--line);
+    border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-md);
+  }
+  .res-head {
+    background: var(--bg-soft); border-bottom: 1px solid var(--line);
+    padding: 28px 24px 24px;
+  }
+  .res-stamp-row { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .res-stamp {
+    display: inline-flex; align-items: center;
+    padding: 5px 11px; background: var(--accent); color: var(--accent-ink);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+    letter-spacing: 0.08em; text-transform: uppercase;
+  }
+  .res-eyebrow {
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em;
+    color: var(--ink-3); text-transform: uppercase;
+  }
+  .res-title {
+    font-family: var(--font-display); font-weight: 600;
+    font-size: clamp(20px, 4vw, 28px); line-height: 1.15; letter-spacing: -0.02em;
+  }
+
+  .res-body { padding: 24px; display: grid; gap: 24px; }
+
+  .sec-label {
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--ink-3); margin-bottom: 10px;
+  }
+  .res-body p { color: var(--ink-2); font-size: 15px; line-height: 1.65; }
+
+  .key-point {
+    display: flex; gap: 14px; background: var(--bg-soft);
+    border-radius: var(--radius-md); padding: 16px 20px; border-left: 3px solid var(--accent);
+  }
+  .key-point-label {
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--ink-3);
+    white-space: nowrap; flex-shrink: 0; padding-top: 2px;
+  }
+  .key-point p { margin: 0 !important; font-weight: 600; color: var(--ink); font-size: 15px; }
+
+  /* Platform block */
+  .platform-block { display: grid; gap: 8px; }
+  .platform-primary {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--ink); color: #fff;
+    border-radius: var(--radius-pill); padding: 9px 18px;
+    font-weight: 700; font-size: 15px; width: fit-content;
+  }
+  .platform-secondary {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--bg-muted); border: 1px solid var(--line);
+    border-radius: var(--radius-pill); padding: 7px 16px;
+    font-weight: 600; font-size: 14px; color: var(--ink-2); width: fit-content;
+  }
+  .platform-hint { font-size: 14px; color: var(--ink-3); line-height: 1.55; margin-top: 4px !important; }
+  .platform-dev-note {
+    background: var(--bg-soft); border: 1px solid var(--line);
+    border-radius: var(--radius-md); padding: 13px 16px;
+    font-size: 13px; color: var(--ink-2); line-height: 1.55;
+    margin-top: 4px !important;
+  }
+  .platform-dev-note strong { color: var(--ink); }
+
+  /* Steps */
+  .steps-list { list-style: none; display: grid; gap: 0; }
+  .steps-list li {
+    display: grid; grid-template-columns: 32px 1fr; gap: 12px;
+    align-items: start; padding: 13px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .steps-list li:last-child { border-bottom: none; }
+  .sn { font-family: var(--font-mono); font-size: 12px; font-weight: 500; color: var(--ink-3); padding-top: 2px; }
+  .steps-list li span { font-size: 15px; color: var(--ink); line-height: 1.55; }
+
+  /* FitStars block */
+  .fitstars-block {
+    background: var(--ink); border-radius: var(--radius-lg);
+    padding: 22px 24px; display: grid; gap: 10px;
+  }
+  .fitstars-eyebrow {
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em;
+    text-transform: uppercase; color: rgba(255,255,255,.45);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .fitstars-eyebrow::before {
+    content: ''; display: inline-block; width: 8px; height: 8px;
+    border-radius: 50%; background: var(--accent); flex-shrink: 0;
+  }
+  .fitstars-text { color: #CFD1D4; font-size: 14px; line-height: 1.65; margin: 0 !important; }
+  .fitstars-text strong { color: #fff; }
+
+  /* Difficulties */
+  .diff-list { list-style: none; display: grid; gap: 7px; }
+  .diff-list li {
+    display: flex; gap: 10px; align-items: flex-start;
+    font-size: 14px; color: var(--ink-2); line-height: 1.55; padding: 10px 14px;
+    background: var(--bg-soft); border-radius: var(--radius-sm);
+  }
+  .diff-list li::before {
+    content: '→'; flex-shrink: 0; color: var(--ink-3);
+    font-family: var(--font-mono); font-size: 12px; padding-top: 1px;
+  }
+
+  /* Voice note */
+  .voice-note {
+    background: var(--bg-muted); border-radius: var(--radius-sm);
+    padding: 10px 14px; font-size: 13px; color: var(--ink-2);
+    line-height: 1.55; margin-top: 8px !important;
+  }
+  .voice-note strong { color: var(--ink); }
+
+  /* Time note */
+  .time-note {
+    background: var(--bg-soft); border: 1px solid var(--line);
+    border-radius: var(--radius-md); padding: 13px 16px;
+    font-size: 14px; color: var(--ink-2); line-height: 1.55;
+  }
+  .time-note strong { color: var(--ink); }
+
+  /* Result footer */
+  .res-divider { height: 1px; background: var(--line); margin: 0 24px; }
+  .res-footer { padding: 20px 24px 24px; display: grid; gap: 10px; }
+  .btn-day2 {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    width: 100%; padding: 15px 28px;
+    background: var(--accent); color: var(--accent-ink);
+    border: 1px solid transparent; border-radius: var(--radius-pill);
+    font-family: var(--font-body); font-size: 15px; font-weight: 700;
+    cursor: pointer; text-decoration: none;
+    transition: background .15s, transform .08s; text-align: center;
+  }
+  .btn-day2:hover { background: var(--accent-strong); }
+  .btn-day2:active { transform: translateY(1px); }
+  .btn-restart {
+    display: flex; align-items: center; justify-content: center; width: 100%;
+    padding: 12px 28px; background: transparent; color: var(--ink-2);
+    border: 1.5px solid var(--line); border-radius: var(--radius-pill);
+    font-family: var(--font-body); font-size: 14px; font-weight: 600;
+    cursor: pointer; transition: border-color .15s, color .15s;
+  }
+  .btn-restart:hover { border-color: var(--ink); color: var(--ink); }
+
+  @media (max-width: 480px) {
+    .qmain { padding: 24px 16px 60px; }
+    .qcard { padding: 22px 18px 20px; }
+    .res-head { padding: 22px 18px 20px; }
+    .res-body { padding: 18px; }
+    .res-footer { padding: 16px 18px 20px; }
+    .res-divider { margin: 0 18px; }
+    .key-point { flex-direction: column; gap: 4px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="quiz-header">
+  <div class="hdr-inner">
+    <div class="hdr-row">
+      <span class="hdr-label">Тест-драйв · Квиз</span>
+      <span class="hdr-label" id="hdrStep">Вопрос 1 из 7</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="pFill" style="width:14%"></div>
+    </div>
+  </div>
+</div>
+
+<div class="qmain">
+
+  <!-- Q1: Что сейчас делаешь -->
+  <div class="screen active" id="s0">
+    <div class="qcard">
+      <span class="qeyebrow">Вопрос 1 из 7</span>
+      <div class="qtext">Что ты сейчас делаешь в соцсетях?</div>
+      <div class="options">
+        <button class="option" data-q="0" data-i="0"><span class="odot"></span><span>Практически ничего — иногда выкладываю фото в личный аккаунт</span></button>
+        <button class="option" data-q="0" data-i="1"><span class="odot"></span><span>Веду регулярно, но аудитория небольшая и не растёт</span></button>
+        <button class="option" data-q="0" data-i="2"><span class="odot"></span><span>У меня есть профессия, но соцсети заброшены или их почти нет</span></button>
+        <button class="option" data-q="0" data-i="3"><span class="odot"></span><span>Веду по настроению, без плана — что захочется, то и выложу</span></button>
+      </div>
+    </div>
+    <div class="navrow">
+      <button class="btn-back" disabled>← Назад</button>
+      <button class="btn-next" id="n0" disabled>Дальше →</button>
+    </div>
+  </div>
+
+  <!-- Q2: Подписчики (от меньшего к большему) -->
+  <div class="screen" id="s1">
+    <div class="qcard">
+      <span class="qeyebrow">Вопрос 2 из 7</span>
+      <div class="qtext">Сколько у тебя сейчас подписчиков?</div>
+      <div class="qhint">На основной площадке, где ты активнее всего</div>
+      <div class="options">
+        <button class="option" data-q="1" data-i="0"><span class="odot"></span><span>Нет аккаунта или меньше 100</span></button>
+        <button class="option" data-q="1" data-i="1"><span class="odot"></span><span>До 300 — в основном знакомые и друзья</span></button>
+        <button class="option" data-q="1" data-i="2"><span class="odot"></span><span>300–2000 — есть незнакомые люди в подписчиках</span></button>
+        <button class="option" data-q="1" data-i="3"><span class="odot"></span><span>Больше 2000 — аудитория есть, но хочется роста</span></button>
+      </div>
+    </div>
+    <div class="navrow">
+      <button class="btn-back" onclick="goBack()">← Назад</button>
+      <button class="btn-next" id="n1" disabled>Дальше →</button>
+    </div>
+  </div>
+
+  <!-- Q3: Самое сложное -->
+  <div class="screen" id="s2">
+    <div class="qcard">
+      <span class="qeyebrow">Вопрос 3 из 7</span>
+      <div class="qtext">Что для тебя сейчас самое сложное?</div>
+      <div class="options">
+        <button class="option" data-q="2" data-i="0"><span class="odot"></span><span>Вообще не понимаю, про что мой блог</span></button>
+        <button class="option" data-q="2" data-i="1"><span class="odot"></span><span>Стараюсь, вкладываюсь — а роста нет, устаю</span></button>
+        <button class="option" data-q="2" data-i="2"><span class="odot"></span><span>Страшно показаться некомпетентной или непрофессиональной</span></button>
+        <button class="option" data-q="2" data-i="3"><span class="odot"></span><span>Не знаю, какую площадку выбрать — везде советуют разное</span></button>
+      </div>
+    </div>
+    <div class="navrow">
+      <button class="btn-back" onclick="goBack()">← Назад</button>
+      <button class="btn-next" id="n2" disabled>Дальше →</button>
+    </div>
+  </div>
+
+  <!-- Q4: НОВЫЙ — Цель блога -->
+  <div class="screen" id="s3">
+    <div class="qcard">
+      <span class="qeyebrow">Вопрос 4 из 7</span>
+      <div class="qtext">Чего ты хочешь от блога?</div>
+      <div class="options">
+        <button class="option" data-q="3" data-i="0"><span class="odot"></span><span>Зарабатывать — хочу выйти на реальный доход от блога</span></button>
+        <button class="option" data-q="3" data-i="1"><span class="odot"></span><span>Привлекать клиентов — у меня есть услуги, хочу новую аудиторию</span></button>
+        <button class="option" data-q="3" data-i="2"><span class="odot"></span><span>Строить личный бренд — хочу быть узнаваемой в своей теме</span></button>
+        <button class="option" data-q="3" data-i="3"><span class="odot"></span><span>Пока просто попробовать — с целями ещё не определилась</span></button>
+      </div>
+    </div>
+    <div class="navrow">
+      <button class="btn-back" onclick="goBack()">← Назад</button>
+      <button class="btn-next" id="n3" disabled>Дальше →</button>
+    </div>
+  </div>
+
+  <!-- Q5: Формат — МУЛЬТИВЫБОР -->
+  <div class="screen" id="s4">
+    <div class="qcard">
+      <span class="qeyebrow">Вопрос 5 из 7</span>
+      <div class="qtext">Какой формат контента тебе ближе?</div>
+      <div class="qhint">Можно выбрать несколько — то, что уже пробовала или точно хочется попробовать</div>
+      <div class="options-multi" id="fmtOptions">
+        <button class="opt-multi" data-fmt="0"><span class="cbox"></span><span>✍️ Писать тексты — посты, статьи, заметки</span></button>
+        <button class="opt-multi" data-fmt="1"><span class="cbox"></span><span>🎬 Снимать короткие видео — рилсы, клипы, шортс</span></button>
+        <button class="opt-multi" data-fmt="2"><span class="cbox"></span><span>🎙️ Говорить голосом — аудио, подкасты, кружочки</span></button>
+        <button class="opt-multi" data-fmt="3"><span class="cbox"></span><span>📸 Выкладывать фото с подписями</span></button>
+      </div>
+      <div class="multi-note">Выбрала хотя бы один — можно двигаться дальше</div>
+    </div>
+    <div class="navrow">
+      <button class="btn-back" onclick="goBack()">← Назад</button>
+      <button class="btn-next" id="n4" disabled>Дальше →</button>
+    </div>
+  </div>
+
+  <!-- Q6: Экспертиза -->
+  <div class="screen" id="s5">
+    <div class="qcard">
+      <span class="qeyebrow">Вопрос 6 из 7</span>
+      <div class="qtext">У тебя есть экспертиза, которой ты можешь делиться?</div>
+      <div class="options">
+        <button class="option" data-q="5" data-i="0"><span class="odot"></span><span>Да — есть профессия или тема, в которой я разбираюсь</span></button>
+        <button class="option" data-q="5" data-i="1"><span class="odot"></span><span>Не совсем — специальности нет, но есть опыт, который может быть интересен</span></button>
+        <button class="option" data-q="5" data-i="2"><span class="odot"></span><span>Пока не знаю — не думала об этом так</span></button>
+      </div>
+    </div>
+    <div class="navrow">
+      <button class="btn-back" onclick="goBack()">← Назад</button>
+      <button class="btn-next" id="n5" disabled>Дальше →</button>
+    </div>
+  </div>
+
+  <!-- Q7: Время -->
+  <div class="screen" id="s6">
+    <div class="qcard">
+      <span class="qeyebrow">Вопрос 7 из 7 — последний</span>
+      <div class="qtext">Сколько времени в день ты готова тратить на блог?</div>
+      <div class="qhint">Честно — не как хочется, а как реально получится</div>
+      <div class="options">
+        <button class="option" data-q="6" data-i="0"><span class="odot"></span><span>15–30 минут — вписать в расписание, по-быстрому</span></button>
+        <button class="option" data-q="6" data-i="1"><span class="odot"></span><span>30–60 минут — спокойно, без спешки</span></button>
+        <button class="option" data-q="6" data-i="2"><span class="odot"></span><span>Больше часа — готова вкладываться серьёзно</span></button>
+        <button class="option" data-q="6" data-i="3"><span class="odot"></span><span>Пока не знаю — зависит от дня</span></button>
+      </div>
+    </div>
+    <div class="navrow">
+      <button class="btn-back" onclick="goBack()">← Назад</button>
+      <button class="btn-next" id="n6" disabled>Узнать результат →</button>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div class="screen" id="s-result">
+    <div class="result-card">
+
+      <div class="res-head">
+        <div class="res-stamp-row">
+          <span class="res-stamp" id="rStamp">Портрет А</span>
+          <span class="res-eyebrow">Твой портрет блогера</span>
+        </div>
+        <div class="res-title" id="rTitle">...</div>
+      </div>
+
+      <div class="res-body">
+
+        <div>
+          <div class="sec-label">Кто ты</div>
+          <p id="rDesc">...</p>
+        </div>
+
+        <div class="key-point">
+          <div class="key-point-label">Главное сейчас</div>
+          <p id="rTask">...</p>
+        </div>
+
+        <div>
+          <div class="sec-label">Площадка для старта</div>
+          <div class="platform-block" id="platformBlock">
+            <!-- filled by JS -->
+          </div>
+        </div>
+
+        <div>
+          <div class="sec-label">3 шага на эту неделю</div>
+          <ol class="steps-list" id="rSteps"></ol>
+        </div>
+
+        <div id="rDiff">
+          <!-- filled by JS -->
+        </div>
+
+        <div class="fitstars-block" id="fitBlock">
+          <!-- filled by JS -->
+        </div>
+
+        <div class="time-note" id="rTime"></div>
+
+      </div>
+
+      <div class="res-divider"></div>
+      <div class="res-footer">
+        <a href="#lesson2" class="btn-day2">Перейти к Уроку 2 →</a>
+        <button class="btn-restart" onclick="downloadResult()" style="margin-right:8px;">📄 Скачать мой результат</button>
+        <button class="btn-restart" onclick="restart()">Пройти квиз заново</button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /qmain -->
+
+<script>
+const TOTAL = 7;
+
+// Scoring arrays: [A, B, V] per option per question.
+// Q4 (format, index 4) = multiselect → platform only, handled separately.
+// Q2 reordered: 0=<100(V), 1=<300(A), 2=300-2k(B), 3=>2k(B)
+const SCORES = [
+  [[2,0,0],[0,2,0],[0,0,2],[1,1,0]],         // Q1 (index 0)
+  [[0,0,1],[1,0,0],[0,1,0],[0,1,0]],         // Q2 (index 1) — reordered
+  [[2,0,0],[0,2,0],[0,0,2],[1,0,1]],         // Q3 (index 2)
+  [[0,0,0],[0,0,1],[0,1,0],[1,0,0]],         // Q4 goal (index 3)
+  null,                                       // Q5 format (index 4) — multiselect
+  [[0,0,1],null,[1,0,0]],                     // Q6 expertise (index 5)
+  null                                        // Q7 time (index 6)
+];
+
+// Platform data per format option
+const PLATFORMS = [
+  { name: "Яндекс Дзен или ВКонтакте", hint: "Текстовый контент отлично работает на обеих платформах. Алгоритм Дзена сам ищет читателей по темам, ВК даёт полный набор форматов без ограничений." },
+  { name: "ВК Клипы или Rutube Shorts", hint: "Минимальная конкуренция и хороший органический охват прямо сейчас — лучший момент зайти, пока все ещё раздумывают." },
+  { name: "Max или Telegram", hint: "Голосовые форматы создают особую близость с аудиторией — люди слушают в дороге, на тренировке, в фоне." },
+  { name: "ВКонтакте", hint: "Лучший вариант для фотоконтента с подписями. Широкая аудитория, нет ограничений, удобные сторис и альбомы." }
+];
+
+const TIME_NOTES = [
+  "<strong>15–30 минут в день</strong> — реально. Начни с одного поста в неделю плюс пары сторис. Главное — регулярность, а не объём.",
+  "<strong>30–60 минут</strong> — хороший ресурс. Хватит на 2–3 поста в неделю плюс реакции на комментарии.",
+  "<strong>Больше часа</strong> — отличный задел. Только помни: один хороший пост лучше трёх идеальных, которые ты не выложила.",
+  "Не страшно, что пока не знаешь с временем. В курсе начинаем с минимального формата и подстраиваем ритм под жизнь."
+];
+
+// FitStars text: [portrait][goal]
+// portraits: 0=A, 1=B, 2=V
+// goals: 0=earn, 1=clients, 2=brand, 3=explore
+const FITSTARS = {
+  // A[goal]: earn, clients, brand, explore
+  A: [
+    "Забота о себе — тренировки, питание, сон — один из самых органичных тем для личного дневника. Ты не продаёшь фитнес — ты живёшь так, что другим хочется делать как ты. Показываешь: как мама в декрете находит 20 минут на тренировку. Получается не всегда — и говоришь об этом честно. Именно такой контент строит доверие, и вот тогда <strong>рекомендация ФитСтарс превращается в доход</strong> — не потому что ты продаёшь в лоб, а потому что ты живёшь этим.",
+    "Аудитория, которой близка тема активной жизни и заботы о себе — огромная. Контент о тренировках, нехватке времени на себя, попытках поддерживать режим цепляет миллионы. <strong>Амбассадорство ФитСтарс</strong> вписывается в эту тему органично — и становится источником дохода, когда у тебя есть люди, которые тебе доверяют.",
+    "Быть человеком, который заботится о себе и честно об этом рассказывает, — уже <strong>часть личного бренда</strong>. ФитСтарс усиливает ассоциацию с активной жизнью, на которую хочется равняться. При этом ты не становишься «фитнес-блогером» — просто показываешь одну из сторон своей жизни.",
+    "Начни с простого: расскажи о своей попытке заниматься спортом — получилось, не получилось, как это выглядит в реальной жизни. Это живой контент, который люди любят. И <strong>первые деньги через ФитСтарс</strong> придут именно из такой честности, а не из прямой рекламы."
+  ],
+  B: [
+    "У тебя уже есть аудитория, которая тебе доверяет. Добавь к контенту тему заботы о себе — она заходит широко и не конфликтует ни с какой нишей. <strong>Амбассадорство ФитСтарс</strong> даёт конкретный доход с каждой проданной подписки без создания собственного продукта.",
+    "Контент о тренировках и здоровье расширяет аудиторию и показывает тебя живым человеком, а не только «контент-машиной». ФитСтарс — <strong>инструмент монетизации</strong>, который работает параллельно с основной нишей и не требует кардинально менять стиль блога.",
+    "Амбассадорство ФитСтарс добавляет к твоему образу тему активной жизни — это <strong>расширяет личный бренд</strong> и привлекает новый сегмент аудитории, которой эта тема близка.",
+    "Понятный шаг к монетизации — рассказывать о том, как ты сама занимаешься или пытаешься. Это не требует менять нишу. ФитСтарс даёт за это <strong>реальный доход</strong> с каждой рекомендации."
+  ],
+  V: [
+    "Эксперты, которые показывают себя как живого человека — тоже занимаются спортом, устают, заботятся о себе — <strong>вызывают больше доверия</strong>, чем те, кто пишет только про работу. Рекомендация ФитСтарс в этом контексте звучит как совет, а не реклама. Доход растёт вместе с аудиторией.",
+    "Контент о ЗОЖ рядом с экспертными постами <strong>привлекает новый сегмент</strong> — тех, кто ищет не только специалиста, но и живого человека, на которого хочется быть похожим. ФитСтарс даёт для этого органичный инструмент.",
+    "Эксперт, который ещё и ведёт активный образ жизни, — <strong>сильный личный бренд</strong>. ФитСтарс усиливает эту ассоциацию, добавляет доверие к рекомендациям и даёт доход с каждой продажи.",
+    "Попробуй начать не с профессионального контента, а с честного рассказа о себе. Тренировки, усталость, попытки поддерживать форму — это заходит. <strong>Амбассадорство ФитСтарс</strong> — органичный способ монетизировать именно такой живой контент."
+  ]
+};
+
+const PORTRAITS = {
+  A: {
+    stamp: "Портрет А",
+    title: "Жизнь как контент",
+    desc: "Ты — человек с настоящей жизнью, которая уже интересна другим, даже если ты сама в это пока не очень веришь. Самые живые блоги сегодня — не у людей с дипломами. Они у повара школьной столовой, которая показывает, как на самом деле готовится еда за 50 рублей. У девочки-крановщицы, рассказывающей про работу на высоте 40 метров. У мамы в декрете с острым взглядом на то, почему современное материнство такое странное. Если у тебя есть жизнь и есть что сказать — значит, есть блог.",
+    task: "Не «определиться с темой на всю жизнь» — это пугает и парализует. Ответь на один вопрос: что происходит в твоей жизни прямо сейчас, что ты замечаешь каждый день? Острый вопрос, который возмущает? Ситуация, в которой узнаёшь себя — и миллион других? Вот отсюда и начинается.",
+    steps: [
+      "Выпиши 5 тем, которые тебя часто волнуют, злят или восхищают — неважно, кажутся они «глупыми» или нет. Например, мама в декрете напишет: «почему все советуют, но никто не помогает», «я не сплю уже год», «детские кружки за 5000 рублей — это нормально?», «хочу в спортзал, но некогда», «мужчины и декрет»",
+      "Посмотри свои последние 10 постов или сторис — о чём ты уже говоришь, даже не называя это блогом?",
+      "Выбери одну тему — ту, о которой хочется говорить прямо сейчас. Не идеальную, а живую. Это и есть старт."
+    ]
+  },
+  B: {
+    stamp: "Портрет Б",
+    title: "Блог есть, роста нет",
+    desc: "У тебя уже есть фундамент: аудитория, привычка делать контент, понимание того, как работают соцсети. Проблема обычно не в том, что делаешь мало — скорее наоборот: делаешь много, тратишь силы, а результат не соответствует вложениям. Это классический сигнал, что где-то в системе есть рваное звено. Найдём его.",
+    task: "Не «делать больше», а найти, где именно рвётся. Чаще всего это одно из трёх: нечёткое позиционирование (люди не понимают, про что ты с первого взгляда), хаотичная регулярность (то густо, то пусто), или попытка продавать раньше, чем накоплено достаточно доверия.",
+    steps: [
+      "Открой свою ленту: незнакомый человек листает 5 постов — что он понял про тебя? Про что ты? Для кого? Если ответ размытый — вот точка роста",
+      "Посчитай посты за последний месяц: сколько их было и как они распределились — равномерно или рывками? Регулярность важнее качества на старте",
+      "Найди 3 поста с самой живой реакцией (комменты, сохранения, пересылки) — про что они? Скорее всего там спрятана твоя настоящая тема"
+    ]
+  },
+  V: {
+    stamp: "Портрет В",
+    title: "Эксперт без блога",
+    desc: "У тебя есть то, за что люди платят деньги, — экспертиза. Но важно понять сразу: блог эксперта — это не только профессиональные посты. Аудитория подписывается на человека, а не на должность. Им интересны твои взгляды на жизнь, личные истории, острые вопросы, которые тебя волнуют — всё то, что роднит тебя с ними. Чередование «экспертного» и «живого» контента — это то, что превращает специалиста в блогера, за которым хочется следить.",
+    task: "Не только «как говорить о сложном просто», но и «о чём ещё я могу говорить, кроме работы». Твои знания — топливо. Живые истории и личная позиция — то, что делает этот контент человеческим.",
+    steps: [
+      "Выпиши 5 вопросов, которые тебе чаще всего задают в твоей сфере — клиенты, друзья, случайные знакомые. Это готовые темы для экспертных постов",
+      "Выпиши 3 темы вне профессии, которые тебя сейчас волнуют или раздражают — это твой «живой» контент рядом с экспертным",
+      "Ответь на один вопрос из первого списка так, как объяснила бы подруге за кофе — и добавь личную историю или своё мнение"
+    ]
+  }
+};
+
+const DIFFICULTIES = {
+  A: [
+    "«А кому это вообще интересно?» — самый частый страх. Проходит, когда начинают приходить отклики от незнакомых людей",
+    "Осуждение близких — они могут странно реагировать на то, что ты «выставляешь жизнь напоказ». Это нормально и со временем проходит",
+    "Нет системы — сложно вести регулярно без привычки. Именно это строится в курсе",
+    "«Моя жизнь слишком обычная» — на самом деле именно это и цепляет людей больше всего"
+  ],
+  B: [
+    "Выгорание — когда вкладываешься, а роста нет, мотивация падает быстро. Без системы это неизбежно",
+    "«Делаю всё правильно, но не работает» — обычно проблема в позиционировании, которое не считывается с первого взгляда",
+    "Желание попробовать всё сразу — новые форматы, новые площадки. Распыление убивает рост",
+    "Попытка монетизировать раньше времени — аудитория ещё не готова, и это демотивирует"
+  ],
+  V: [
+    "Перфекционизм — страх написать «недостаточно профессионально». Аудитория ценит живость, а не безупречность",
+    "«Всё, что я знаю — всем известно» — типичная ошибка эксперта. То, что очевидно вам, для большинства — откровение",
+    "Сложно переключиться с профессионального языка на человеческий. Это навык, который тренируется",
+    "Страх смешивать личное и профессиональное — на деле именно это создаёт лояльную аудиторию"
+  ]
+};
+
+// State
+let cur = 0;
+let answers = Array(TOTAL).fill(null);   // null = not answered (for single-choice)
+let fmtSelected = new Set();             // indices of selected formats (Q5 multiselect)
+let goalIdx = null;
+let timeIdx = null;
+let scores = {A:0, B:0, V:0};
+
+// Init
+document.addEventListener('DOMContentLoaded', () => {
+  // Single-choice options
+  document.querySelectorAll('.option').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const q = +btn.dataset.q;
+      const i = +btn.dataset.i;
+      answers[q] = i;
+      document.querySelectorAll(`.option[data-q="${q}"]`).forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      const nb = document.getElementById(`n${q > 4 ? q : q}`);
+      // map question index to screen index
+      const screenIdx = q <= 2 ? q : q <= 3 ? q : q + 1; // Q0-3 map to s0-s3, Q5-6 map to s5-s6
+      // Actually just use the current screen index
+      const nextId = `n${cur}`;
+      const nextBtn = document.getElementById(nextId);
+      if (nextBtn) nextBtn.disabled = false;
+    });
+  });
+
+  // Multi-choice (Q5 formats)
+  document.querySelectorAll('.opt-multi').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const f = +btn.dataset.fmt;
+      if (fmtSelected.has(f)) {
+        fmtSelected.delete(f);
+        btn.classList.remove('selected');
+      } else {
+        fmtSelected.add(f);
+        btn.classList.add('selected');
+      }
+      document.getElementById('n4').disabled = fmtSelected.size === 0;
+    });
+  });
+
+  // Next buttons
+  for (let i = 0; i < TOTAL; i++) {
+    const nb = document.getElementById(`n${i}`);
+    if (nb) nb.addEventListener('click', goNext);
+  }
+});
+
+function goNext() {
+  const cur_screen = document.getElementById(`s${cur}`);
+  cur_screen.classList.add('out');
+  setTimeout(() => {
+    cur_screen.classList.remove('active','out','rev');
+    cur_screen.style.display = 'none';
+    if (cur === TOTAL - 1) {
+      compute();
+      showScreen('s-result', false);
+    } else {
+      cur++;
+      updateHdr();
+      showScreen(`s${cur}`, false);
+    }
+  }, 200);
+}
+
+function goBack() {
+  if (cur === 0) return;
+  const cur_screen = document.getElementById(`s${cur}`);
+  cur_screen.classList.add('out');
+  setTimeout(() => {
+    cur_screen.classList.remove('active','out','rev');
+    cur_screen.style.display = 'none';
+    cur--;
+    updateHdr();
+    showScreen(`s${cur}`, true);
+  }, 200);
+}
+
+function showScreen(id, reverse) {
+  const s = document.getElementById(id);
+  s.style.display = '';
+  s.classList.remove('active','out','rev');
+  void s.offsetWidth;
+  s.classList.add('active');
+  if (reverse) s.classList.add('rev');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function updateHdr() {
+  const step = cur + 1;
+  const pct = Math.round((step / TOTAL) * 100);
+  document.getElementById('hdrStep').textContent = `Вопрос ${step} из ${TOTAL}`;
+  document.getElementById('pFill').style.width = pct + '%';
+}
+
+function compute() {
+  scores = {A:0, B:0, V:0};
+  goalIdx = null; timeIdx = null;
+
+  for (let q = 0; q < TOTAL; q++) {
+    // Q5 (cur index 4) is multiselect — handled separately
+    if (q === 4) continue;
+    const i = answers[q];
+    if (i === null) continue;
+
+    // Q3 = goal (index 3)
+    if (q === 3) { goalIdx = i; }
+    // Q6 = time (index 6)
+    if (q === 6) { timeIdx = i; }
+
+    const sc = SCORES[q];
+    if (!sc) continue;
+    const s = sc[i];
+    if (s === null) {
+      // dynamic AB
+      scores[scores.B > scores.A ? 'B' : 'A'] += 1;
+    } else {
+      scores.A += s[0]; scores.B += s[1]; scores.V += s[2];
+    }
+  }
+
+  // Determine portrait
+  let p = 'A';
+  if (scores.B > scores[p]) p = 'B';
+  if (scores.V > scores[p]) p = 'V';
+  if (scores.V === scores[p] && p !== 'V') p = 'V';
+  if (scores.B === scores[p] && p === 'A') p = 'B';
+
+  renderResult(p);
+}
+
+function renderResult(p) {
+  const P = PORTRAITS[p];
+  const gIdx = goalIdx ?? 3;
+  const tIdx = timeIdx ?? 3;
+
+  document.getElementById('rStamp').textContent = P.stamp;
+  document.getElementById('rTitle').textContent = P.title;
+  document.getElementById('rDesc').textContent = P.desc;
+  document.getElementById('rTask').textContent = P.task;
+  document.getElementById('rTime').innerHTML = '⏱ ' + TIME_NOTES[tIdx];
+
+  // Steps
+  const sl = document.getElementById('rSteps');
+  sl.innerHTML = '';
+  P.steps.forEach((st, i) => {
+    const li = document.createElement('li');
+    li.innerHTML = `<span class="sn">0${i+1}</span><span>${st}</span>`;
+    sl.appendChild(li);
+  });
+
+  // Platform block (multiselect)
+  const fmts = fmtSelected.size > 0 ? [...fmtSelected].sort() : [0];
+  const primary = PLATFORMS[fmts[0]];
+  const secondaries = fmts.slice(1).map(f => PLATFORMS[f]);
+
+  const pb = document.getElementById('platformBlock');
+  pb.innerHTML = '';
+
+  const prim = document.createElement('div');
+  prim.innerHTML = `<div class="platform-primary">📍 ${primary.name}</div>`;
+  pb.appendChild(prim);
+
+  const hint = document.createElement('p');
+  hint.className = 'platform-hint';
+  hint.textContent = primary.hint;
+  pb.appendChild(hint);
+
+  if (secondaries.length > 0) {
+    const devNote = document.createElement('div');
+    devNote.className = 'platform-dev-note';
+    const secNames = secondaries.map(s => s.name).join(', ');
+    devNote.innerHTML = `<strong>Следующий шаг — развить параллельно:</strong> ${secNames}. На курсе поможем адаптировать один и тот же контент под разные форматы и площадки — чтобы один ролик или пост работал в нескольких местах сразу.`;
+    pb.appendChild(devNote);
+  } else {
+    const devNote = document.createElement('div');
+    devNote.className = 'platform-dev-note';
+    devNote.innerHTML = `<strong>Совет:</strong> это стартовая площадка. Когда наберёшь руку, на курсе поможем запустить вторую параллельно — адаптируя один и тот же контент под разные форматы и места.`;
+    pb.appendChild(devNote);
+  }
+
+  // Голосовой → текст (если выбран голос)
+  if (fmtSelected.has(2)) {
+    const vn = document.createElement('div');
+    vn.className = 'voice-note';
+    vn.innerHTML = `🎙️ <strong>Лайфхак для голосового формата:</strong> записанные аудио и кружочки можно автоматически переводить в текст с помощью ИИ — и получать готовый пост или статью. Один контент работает сразу в двух форматах.`;
+    pb.appendChild(vn);
+  }
+
+  // Difficulties block
+  const diffs = DIFFICULTIES[p];
+  const diffEl = document.getElementById('rDiff');
+  diffEl.innerHTML = `
+    <div class="sec-label">Возможные трудности — знай заранее</div>
+    <ul class="diff-list">
+      ${diffs.map(d => `<li>${d}</li>`).join('')}
+    </ul>
+  `;
+
+  // FitStars block
+  const fsText = FITSTARS[p][gIdx];
+  document.getElementById('fitBlock').innerHTML = `
+    <div class="fitstars-eyebrow">Как тебе поможет амбассадорство ФитСтарс</div>
+    <p class="fitstars-text">${fsText}</p>
+  `;
+
+  // Update header
+  document.getElementById('hdrStep').textContent = 'Результат готов';
+  document.getElementById('pFill').style.width = '100%';
+}
+
+function restart() {
+  cur = 0;
+  answers = Array(TOTAL).fill(null);
+  fmtSelected = new Set();
+  goalIdx = null; timeIdx = null;
+  scores = {A:0, B:0, V:0};
+
+  document.querySelectorAll('.option').forEach(b => b.classList.remove('selected'));
+  document.querySelectorAll('.opt-multi').forEach(b => b.classList.remove('selected'));
+  for (let i = 0; i < TOTAL; i++) {
+    const nb = document.getElementById(`n${i}`);
+    if (nb) nb.disabled = true;
+  }
+
+  const rs = document.getElementById('s-result');
+  rs.classList.remove('active'); rs.style.display = 'none';
+  updateHdr();
+  showScreen('s0', false);
+}
+
+// Скачивание результата квиза в виде текстового файла
+function downloadResult() {
+  const stamp = document.getElementById('rStamp').textContent;
+  const title = document.getElementById('rTitle').textContent;
+  const desc = document.getElementById('rDesc').textContent;
+  const task = document.getElementById('rTask').textContent;
+
+  const stepsEl = document.querySelectorAll('#rSteps li');
+  const steps = Array.from(stepsEl).map((li, i) => `${i + 1}. ${li.textContent.trim()}`).join('\n');
+
+  const platformBlock = document.getElementById('platformBlock');
+  const platformText = platformBlock ? platformBlock.innerText.replace(/\n{3,}/g, '\n\n') : '';
+
+  const today = new Date().toLocaleDateString('ru-RU');
+
+  const content = `╔════════════════════════════════════════╗
+   ТВОЯ ПЛАТФОРМА-2026
+   Результат квиза от ${today}
+╚════════════════════════════════════════╝
+
+
+${stamp}
+${title}
+
+──────────────────────────────────────────
+КТО ТЫ
+──────────────────────────────────────────
+
+${desc}
+
+
+──────────────────────────────────────────
+ГЛАВНОЕ СЕЙЧАС
+──────────────────────────────────────────
+
+${task}
+
+
+──────────────────────────────────────────
+ПЛОЩАДКА ДЛЯ СТАРТА
+──────────────────────────────────────────
+
+${platformText}
+
+
+──────────────────────────────────────────
+3 ШАГА НА ЭТУ НЕДЕЛЮ
+──────────────────────────────────────────
+
+${steps}
+
+
+──────────────────────────────────────────
+ЧТО ДАЛЬШЕ
+──────────────────────────────────────────
+
+Сохрани этот файл — он понадобится в Уроке 2 и Уроке 3
+тест-драйва. Твой портрет — ключ, по которому курс
+подстроится под тебя.
+
+Курс «Блогер с нуля» от FitStars
+`;
+
+  const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `Моя_платформа_2026_${stamp.replace(/\s/g, '_')}.txt`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+</script>
+</body>
+</html>
