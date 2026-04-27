@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Урок 1 · Гайд — На чём держится любой работающий блог</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #FFFFFF; --bg-soft: #F5F6F7; --bg-muted: #EDEEF0;
+    --ink: #1A1A1A; --ink-2: #4A4D52; --ink-3: #8A8E94; --line: #E4E6E9;
+    --accent: #C4F542; --accent-strong: #B8E83D; --accent-ink: #0F1A00;
+    --danger: #E84A4A;
+    --radius-sm: 10px; --radius-md: 16px; --radius-lg: 24px; --radius-pill: 999px;
+    --shadow-sm: 0 1px 2px rgba(16,18,20,.04), 0 1px 1px rgba(16,18,20,.03);
+    --shadow-md: 0 4px 16px rgba(16,18,20,.06);
+    --font-display: 'Unbounded', ui-sans-serif, system-ui, sans-serif;
+    --font-body: 'Manrope', ui-sans-serif, system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  }
+  html, body { margin: 0; padding: 0; background: var(--bg); }
+  body {
+    font-family: var(--font-body);
+    color: var(--ink);
+    font-size: 16px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+
+  /* Shell */
+  .shell {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 24px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  /* Top bar */
+  .topbar {
+    padding: 20px 0 0;
+    border-bottom: 1px solid var(--line);
+    background: var(--bg);
+    z-index: 10;
+    position: sticky;
+    top: 0;
+  }
+  .topbar-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    gap: 8px;
+  }
+  .meta-left {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  .meta-right {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    color: var(--ink-3);
+  }
+  /* Dot nav */
+  .dots {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 14px;
+    flex-wrap: wrap;
+  }
+  .dot {
+    width: 22px;
+    height: 6px;
+    border-radius: 6px;
+    background: var(--bg-muted);
+    border: none;
+    cursor: pointer;
+    transition: background .2s ease, width .2s ease;
+  }
+  .dot:hover { background: #d4d6d9; }
+  .dot.is-active { background: var(--accent); width: 32px; }
+  .dot.is-done { background: var(--ink); }
+
+  /* Slide */
+  .slide-wrap { flex: 1; padding: 32px 0 24px; }
+  .slide { display: none; animation: fade .35s ease both; }
+  .slide.is-active { display: block; }
+  @keyframes fade {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin-bottom: 12px;
+  }
+  .stamp {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    color: var(--ink-2);
+    background: var(--bg-muted);
+    padding: 4px 10px;
+    border-radius: var(--radius-pill);
+    margin-bottom: 16px;
+  }
+  h1.slide-title {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(26px, 4.4vw, 34px);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin: 0 0 18px;
+  }
+  .lead {
+    font-size: 17px;
+    color: var(--ink-2);
+    margin-bottom: 20px;
+  }
+  p { margin-bottom: 14px; color: var(--ink); }
+  p:last-child { margin-bottom: 0; }
+
+  /* Key point */
+  .key-point {
+    border-left: 3px solid var(--accent);
+    background: var(--bg-soft);
+    padding: 16px 18px;
+    margin: 20px 0;
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  }
+  .key-point__label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin-bottom: 6px;
+  }
+  .key-point__text {
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  /* Element cards (на стартовом слайде) */
+  .element-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin: 20px 0 8px;
+  }
+  @media (max-width: 480px) {
+    .element-grid { grid-template-columns: 1fr; }
+  }
+  .element-card {
+    background: var(--bg-soft);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    padding: 14px 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .element-card__num {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 18px;
+    color: var(--ink-3);
+    line-height: 1;
+    min-width: 22px;
+  }
+  .element-card__name {
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 2px;
+    line-height: 1.3;
+  }
+  .element-card__hint {
+    font-size: 13px;
+    color: var(--ink-2);
+    line-height: 1.4;
+  }
+
+  /* Three steps (для слайда позиционирования) */
+  .check-list {
+    list-style: none;
+    padding: 0;
+    margin: 16px 0 8px;
+  }
+  .check-list li {
+    padding: 12px 0 12px 28px;
+    border-bottom: 1px solid var(--line);
+    position: relative;
+  }
+  .check-list li:last-child { border-bottom: none; }
+  .check-list li::before {
+    content: "→";
+    position: absolute;
+    left: 0;
+    top: 12px;
+    color: var(--accent-ink);
+    font-weight: 700;
+  }
+  .check-list strong { display: block; margin-bottom: 2px; }
+  .check-list span { font-size: 14px; color: var(--ink-2); }
+
+  /* Platforms table */
+  .platforms-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0 8px;
+    font-size: 14px;
+  }
+  .platforms-table th, .platforms-table td {
+    text-align: left;
+    padding: 10px 8px;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+  }
+  .platforms-table th {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    font-weight: 500;
+  }
+  .platforms-table td:first-child { font-weight: 600; white-space: nowrap; }
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: var(--radius-pill);
+    font-family: var(--font-mono);
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+  .badge-ok { background: var(--accent); color: var(--accent-ink); }
+  .badge-warn { background: #FFE9C4; color: #6B4A00; }
+  .badge-vpn { background: var(--bg-muted); color: var(--ink-2); }
+
+  /* Course steps на финальном слайде */
+  .course-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 20px 0 8px;
+  }
+  .course-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 12px 14px;
+    border-left: 2px solid var(--line);
+  }
+  .course-step.is-parallel {
+    border-left-color: var(--accent);
+    background: var(--bg-soft);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  }
+  .course-step__week {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    min-width: 78px;
+    padding-top: 2px;
+  }
+  .course-step__name {
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+  .course-step__hint {
+    font-size: 13px;
+    color: var(--ink-2);
+    line-height: 1.4;
+  }
+  .parallel-tag {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent-ink);
+    background: var(--accent);
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+    margin-left: 8px;
+    vertical-align: 2px;
+  }
+
+  /* Callout dark — финальный аккорд */
+  .callout-dark {
+    background: var(--ink);
+    color: #FFFFFF;
+    border-radius: var(--radius-md);
+    padding: 20px 22px;
+    margin: 22px 0 12px;
+  }
+  .callout-dark p { color: #FFFFFF; }
+  .callout-dark__label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+  .callout-dark__text {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 18px;
+    line-height: 1.35;
+    letter-spacing: -0.01em;
+    color: #FFFFFF;
+  }
+
+  /* Bottom controls */
+  .controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 18px 0 26px;
+    border-top: 1px solid var(--line);
+    background: var(--bg);
+    position: sticky;
+    bottom: 0;
+  }
+  .btn {
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 1;
+    padding: 12px 18px;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--line);
+    background: var(--bg);
+    color: var(--ink);
+    cursor: pointer;
+    transition: background .15s ease, border-color .15s ease, transform .05s ease;
+  }
+  .btn:hover { background: var(--bg-soft); }
+  .btn:active { transform: scale(0.98); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn--primary {
+    background: var(--accent);
+    color: var(--accent-ink);
+    border-color: var(--accent);
+  }
+  .btn--primary:hover { background: var(--accent-strong); border-color: var(--accent-strong); }
+  .btn--ghost {
+    background: transparent;
+    border-color: transparent;
+    color: var(--ink-2);
+  }
+  .btn--ghost:hover { color: var(--ink); background: var(--bg-soft); }
+  .progress-text {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    color: var(--ink-3);
+  }
+
+  /* Mobile tweaks */
+  @media (max-width: 540px) {
+    .shell { padding: 0 18px; }
+    h1.slide-title { font-size: 24px; }
+    .lead { font-size: 15px; }
+    .controls { padding: 14px 0 20px; }
+    .btn { padding: 10px 14px; font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- Top bar -->
+  <div class="topbar">
+    <div class="topbar-meta">
+      <div class="meta-left">Урок 1 · Гайд</div>
+      <div class="meta-right" id="progressLabel">1 / 8</div>
+    </div>
+    <div class="dots" id="dots"></div>
+  </div>
+
+  <!-- Slides -->
+  <div class="slide-wrap">
+
+    <!-- Слайд 1. Шесть элементов — обзор -->
+    <section class="slide is-active" data-slide="1">
+      <div class="eyebrow">С чего начнём · 5–7 минут</div>
+      <span class="stamp">01</span>
+      <h1 class="slide-title">Любой блог, который работает, стоит на 6 элементах</h1>
+      <p class="lead">Это не теория из учебника. Это то, что обязательно есть у любого блога, который приносит результат. Убери один элемент — блог начинает шататься.</p>
+
+      <p>Сейчас разберём каждый и попутно увидим, как устроен курс — потому что эти шесть элементов и есть его шесть модулей.</p>
+
+      <div class="element-grid">
+        <div class="element-card">
+          <div class="element-card__num">01</div>
+          <div>
+            <div class="element-card__name">Позиционирование</div>
+            <div class="element-card__hint">Про что ты и для кого</div>
+          </div>
+        </div>
+        <div class="element-card">
+          <div class="element-card__num">02</div>
+          <div>
+            <div class="element-card__name">Площадка</div>
+            <div class="element-card__hint">Где тебе строить аудиторию</div>
+          </div>
+        </div>
+        <div class="element-card">
+          <div class="element-card__num">03</div>
+          <div>
+            <div class="element-card__name">Контент-система</div>
+            <div class="element-card__hint">Как делать регулярно и не сгорать</div>
+          </div>
+        </div>
+        <div class="element-card">
+          <div class="element-card__num">04</div>
+          <div>
+            <div class="element-card__name">ИИ-ускорение</div>
+            <div class="element-card__hint">Как делегировать рутину нейросетям</div>
+          </div>
+        </div>
+        <div class="element-card">
+          <div class="element-card__num">05</div>
+          <div>
+            <div class="element-card__name">Монетизация</div>
+            <div class="element-card__hint">Как блог превращается в доход</div>
+          </div>
+        </div>
+        <div class="element-card">
+          <div class="element-card__num">06</div>
+          <div>
+            <div class="element-card__name">Законность</div>
+            <div class="element-card__hint">Как не получить штраф</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="key-point">
+        <div class="key-point__label">Главное</div>
+        <div class="key-point__text">Порядок не случайный. Каждый следующий элемент опирается на предыдущий.</div>
+      </div>
+    </section>
+
+    <!-- Слайд 2. Позиционирование -->
+    <section class="slide" data-slide="2">
+      <div class="eyebrow">Элемент 1 из 6</div>
+      <span class="stamp">02</span>
+      <h1 class="slide-title">Позиционирование — про что ты</h1>
+      <p class="lead">Человек зашёл к тебе в блог, пролистал пять постов. Что он понял про тебя? Если ответ «у неё всего понемногу» — позиционирования нет.</p>
+
+      <p>«Обо всём» = ни о чём. Люди подписываются не на тех, кто пишет обо всём подряд, а на тех, про кого у них в голове чёткая ассоциация: «это про материнство с лёгкой иронией», «это про инвестиции для новичков», «это про школу изнутри».</p>
+
+      <ul class="check-list">
+        <li>
+          <strong>Про что ты?</strong>
+          <span>Одно предложение, без «и ещё...»</span>
+        </li>
+        <li>
+          <strong>Для кого?</strong>
+          <span>Кто твой человек, которого ты представляешь, когда пишешь</span>
+        </li>
+        <li>
+          <strong>Что он получит?</strong>
+          <span>Знания, эмоции, узнавание себя, вдохновение</span>
+        </li>
+      </ul>
+
+      <p>Если хотя бы на один вопрос ответа нет — позиционирование размыто. Это не приговор, это просто точка, с которой мы начинаем на первой неделе курса.</p>
+    </section>
+
+    <!-- Слайд 3. Площадка -->
+    <section class="slide" data-slide="3">
+      <div class="eyebrow">Элемент 2 из 6</div>
+      <span class="stamp">03</span>
+      <h1 class="slide-title">Площадка — где тебе строить</h1>
+      <p class="lead">Это не «где все сидят» и не «где я точно пробьюсь». Это «где мне комфортно регулярно появляться и где есть моя аудитория».</p>
+
+      <p>Две площадки нужны почти всегда: одна — для роста, вторая — для удержания.</p>
+
+      <table class="platforms-table">
+        <thead>
+          <tr>
+            <th>Площадка</th>
+            <th>Статус</th>
+            <th>Коротко</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>ВКонтакте</td>
+            <td><span class="badge badge-ok">Работает</span></td>
+            <td>Базовая площадка, без VPN, полный набор форматов</td>
+          </tr>
+          <tr>
+            <td>Яндекс Дзен</td>
+            <td><span class="badge badge-ok">Работает</span></td>
+            <td>Для текстов. Алгоритм сам подбирает аудиторию</td>
+          </tr>
+          <tr>
+            <td>Rutube</td>
+            <td><span class="badge badge-ok">Работает</span></td>
+            <td>Альтернатива YouTube. Конкуренция пока невысокая</td>
+          </tr>
+          <tr>
+            <td>Max</td>
+            <td><span class="badge badge-ok">Работает</span></td>
+            <td>Российский мессенджер. Растёт быстро</td>
+          </tr>
+          <tr>
+            <td>TikTok</td>
+            <td><span class="badge badge-warn">Без монетизации</span></td>
+            <td>Для охвата, но не для прямого заработка</td>
+          </tr>
+          <tr>
+            <td>Telegram</td>
+            <td><span class="badge badge-warn">Замедляется</span></td>
+            <td>Аудитория есть, но не строить как единственную</td>
+          </tr>
+          <tr>
+            <td>Instagram</td>
+            <td><span class="badge badge-vpn">VPN</span></td>
+            <td>Только с VPN. Нестабильно для основы</td>
+          </tr>
+          <tr>
+            <td>YouTube</td>
+            <td><span class="badge badge-vpn">VPN</span></td>
+            <td>Аналогично</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="key-point">
+        <div class="key-point__label">Важно</div>
+        <div class="key-point__text">Шесть элементов работают на любой площадке одинаково. Меняется только упаковка.</div>
+      </div>
+    </section>
+
+    <!-- Слайд 4. Контент-система -->
+    <section class="slide" data-slide="4">
+      <div class="eyebrow">Элемент 3 из 6</div>
+      <span class="stamp">04</span>
+      <h1 class="slide-title">Контент-система — как делать регулярно и не сгорать</h1>
+      <p class="lead">Самая частая причина, почему блоги умирают на втором месяце, — не отсутствие таланта и не злые алгоритмы. А отсутствие системы.</p>
+
+      <p>Вдохновение приходит и уходит. Система — остаётся. Три поста в неделю стабильно работают лучше, чем семь постов за один день и потом тишина на месяц.</p>
+
+      <ul class="check-list">
+        <li>
+          <strong>Рубрики</strong>
+          <span>Постоянные темы, в которые ты возвращаешься. У подписчика появляется привычка</span>
+        </li>
+        <li>
+          <strong>Контент-план</strong>
+          <span>Не расписание по часам, а банк идей, из которого ты достаёшь материал</span>
+        </li>
+        <li>
+          <strong>Регулярность</strong>
+          <span>Минимум 3–4 раза в неделю. Меньше — алгоритмы начинают «забывать»</span>
+        </li>
+        <li>
+          <strong>Многоплощадочность</strong>
+          <span>Один материал умеет адаптироваться под несколько форматов без полной переработки</span>
+        </li>
+      </ul>
+
+      <p>На третьей неделе курса разбираем это целиком — рубрики, контент-план, регулярность, адаптацию. И сразу подключаем ИИ — про него на следующем слайде.</p>
+    </section>
+
+    <!-- Слайд 5. ИИ-ускорение -->
+    <section class="slide" data-slide="5">
+      <div class="eyebrow">Элемент 4 из 6</div>
+      <span class="stamp">05</span>
+      <h1 class="slide-title">ИИ-ускорение — как делегировать рутину</h1>
+      <p class="lead">ИИ — не замена тебе. Это ускоритель. Он не сделает блог за тебя, но может забрать до 80% рутины и оставить тебе главное — твой голос и твои решения.</p>
+
+      <p>То, на что раньше уходили часы, теперь делается за минуты: набросок поста, монтаж рилса, идеи рубрик, ответ в комментариях, разбор статистики.</p>
+
+      <ul class="check-list">
+        <li>
+          <strong>Темы и идеи</strong>
+          <span>Промпты, которые генерируют 15–30 тем под твою аудиторию за минуту</span>
+        </li>
+        <li>
+          <strong>Тексты</strong>
+          <span>Черновик поста за 30 секунд. Тебе остаётся переписать своим голосом</span>
+        </li>
+        <li>
+          <strong>Монтаж и сценарии</strong>
+          <span>Нейромонтаж рилсов, сторибординг, субтитры</span>
+        </li>
+        <li>
+          <strong>Аналитика</strong>
+          <span>Разбор статистики и подсказки, что улучшать</span>
+        </li>
+      </ul>
+
+      <div class="key-point">
+        <div class="key-point__label">Внимание</div>
+        <div class="key-point__text">ИИ бесполезен без первых трёх элементов. Он умножает то, что ты уже умеешь — если умеешь мало, умножит мало.</div>
+      </div>
+    </section>
+
+    <!-- Слайд 6. Монетизация -->
+    <section class="slide" data-slide="6">
+      <div class="eyebrow">Элемент 5 из 6</div>
+      <span class="stamp">06</span>
+      <h1 class="slide-title">Монетизация — как блог превращается в доход</h1>
+      <p class="lead">Это не одна кнопка «продать». Это пять разных моделей, которые включаются на разных этапах роста.</p>
+
+      <p>Главное правило: монетизация не работает без первых четырёх элементов. Без позиционирования непонятно, кому и что продавать. Без площадки — негде. Без системы — нечего.</p>
+
+      <ul class="check-list">
+        <li>
+          <strong>Партнёрские программы</strong>
+          <span>Ты рекомендуешь чужой продукт, получаешь процент с продаж</span>
+        </li>
+        <li>
+          <strong>Амбассадорство</strong>
+          <span>Ты представляешь бренд, фиксированное вознаграждение + процент</span>
+        </li>
+        <li>
+          <strong>Консультации и услуги</strong>
+          <span>Твоя экспертиза продаётся напрямую</span>
+        </li>
+        <li>
+          <strong>Рекламные интеграции</strong>
+          <span>Бренды платят за пост или рилс с упоминанием</span>
+        </li>
+        <li>
+          <strong>Свои продукты</strong>
+          <span>Курсы, гайды, подписки, мерч</span>
+        </li>
+      </ul>
+
+      <div class="key-point">
+        <div class="key-point__label">Главное</div>
+        <div class="key-point__text">Продажи в блоге — это следствие доверия. Сначала аудитория учится тебе доверять. Потом ты можешь предлагать.</div>
+      </div>
+    </section>
+
+    <!-- Слайд 7. Законность -->
+    <section class="slide" data-slide="7">
+      <div class="eyebrow">Элемент 6 из 6</div>
+      <span class="stamp">07</span>
+      <h1 class="slide-title">Законность — как не получить штраф</h1>
+      <p class="lead">Это не страшилка и не бюрократия. Это новая реальность, в которой живёт российский блогинг с 2022 года.</p>
+
+      <p>Маркировка рекламы обязательна. Самозанятость нужна для легального приёма денег. Реестр блогеров — обязателен для тех, у кого больше 10 000 подписчиков. Один пропуск маркировки = штраф до полумиллиона рублей.</p>
+
+      <ul class="check-list">
+        <li>
+          <strong>Самозанятость или ИП</strong>
+          <span>Чтобы легально принимать оплату от рекламодателей</span>
+        </li>
+        <li>
+          <strong>Маркировка рекламы</strong>
+          <span>Плашка «реклама» + токен ОРД на всех рекламных публикациях</span>
+        </li>
+        <li>
+          <strong>Реестр блогеров</strong>
+          <span>От 10 000+ подписчиков — заявление через Госуслуги</span>
+        </li>
+      </ul>
+
+      <p>Большинство новичков откладывает законность «на потом». На потом оказывается — когда уже штраф. Разобраться один раз — дешевле, чем один раз не разобраться.</p>
+    </section>
+
+    <!-- Слайд 8. Как это собирается в курс -->
+    <section class="slide" data-slide="8">
+      <div class="eyebrow">Как устроен курс</div>
+      <span class="stamp">08</span>
+      <h1 class="slide-title">Шесть элементов = шесть модулей за пять недель</h1>
+      <p class="lead">Ты только что прошлась по всей структуре курса. Каждый элемент = отдельный модуль. В конце пятой недели у тебя — работающая система, а не «я что-то знаю про блогинг».</p>
+
+      <div class="course-steps">
+        <div class="course-step">
+          <div class="course-step__week">Неделя 1</div>
+          <div>
+            <div class="course-step__name">Позиционирование</div>
+            <div class="course-step__hint">Найти тему, сузить до рабочего формата, проверить жизнеспособность</div>
+          </div>
+        </div>
+        <div class="course-step">
+          <div class="course-step__week">Неделя 2</div>
+          <div>
+            <div class="course-step__name">Площадки</div>
+            <div class="course-step__hint">Зарегистрироваться, выбрать основную + вспомогательную, настроить охваты</div>
+          </div>
+        </div>
+        <div class="course-step">
+          <div class="course-step__week">Неделя 3</div>
+          <div>
+            <div class="course-step__name">Контент-система</div>
+            <div class="course-step__hint">Рубрики, план, регулярность, адаптация под несколько площадок</div>
+          </div>
+        </div>
+        <div class="course-step is-parallel">
+          <div class="course-step__week">Неделя 3</div>
+          <div>
+            <div class="course-step__name">ИИ-ускорение <span class="parallel-tag">параллельно</span></div>
+            <div class="course-step__hint">Подключаем нейроинструменты сразу к контент-системе — чтобы ты применяла, а не изучала отдельно</div>
+          </div>
+        </div>
+        <div class="course-step">
+          <div class="course-step__week">Неделя 4</div>
+          <div>
+            <div class="course-step__name">Монетизация</div>
+            <div class="course-step__hint">Пять моделей, запуск первой (партнёрка или амбассадорство FitStars)</div>
+          </div>
+        </div>
+        <div class="course-step">
+          <div class="course-step__week">Неделя 5</div>
+          <div>
+            <div class="course-step__name">Законность</div>
+            <div class="course-step__hint">Самозанятость, маркировка, реестр — всё за одну неделю</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout-dark">
+        <div class="callout-dark__label">Что дальше</div>
+        <div class="callout-dark__text">Теперь ты видишь целое. Осталось понять, где в этой карте сейчас именно ты. Это и есть цель следующего урока.</div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Controls -->
+  <div class="controls">
+    <button class="btn btn--ghost" id="prevBtn">← Назад</button>
+    <div class="progress-text" id="progressText">Слайд 1 из 8</div>
+    <button class="btn btn--primary" id="nextBtn">Дальше →</button>
+  </div>
+
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  const dotsContainer = document.getElementById('dots');
+  const progressLabel = document.getElementById('progressLabel');
+  const progressText = document.getElementById('progressText');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+
+  let current = 0;
+
+  // build dots
+  for (let i = 0; i < total; i++) {
+    const dot = document.createElement('button');
+    dot.className = 'dot';
+    dot.setAttribute('aria-label', `Перейти к слайду ${i + 1}`);
+    dot.addEventListener('click', () => goTo(i));
+    dotsContainer.appendChild(dot);
+  }
+
+  function render() {
+    slides.forEach((s, i) => {
+      s.classList.toggle('is-active', i === current);
+    });
+    document.querySelectorAll('.dot').forEach((d, i) => {
+      d.classList.toggle('is-active', i === current);
+      d.classList.toggle('is-done', i < current);
+    });
+    progressLabel.textContent = `${current + 1} / ${total}`;
+    progressText.textContent = `Слайд ${current + 1} из ${total}`;
+    prevBtn.disabled = current === 0;
+    if (current === total - 1) {
+      nextBtn.textContent = 'К квизу →';
+    } else {
+      nextBtn.textContent = 'Дальше →';
+    }
+  }
+
+  function goTo(index) {
+    if (index < 0 || index >= total) return;
+    current = index;
+    render();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  prevBtn.addEventListener('click', () => goTo(current - 1));
+  nextBtn.addEventListener('click', () => {
+    if (current === total - 1) {
+      // На последнем слайде кнопка ведёт к квизу — заглушка
+      // Технический специалист должен заменить эту строку на реальный переход
+      // window.location.href = 'URL_квиза';
+      alert('Здесь будет переход к квизу «Твоя платформа-2026». Тех. специалисту заменить на реальный URL.');
+      return;
+    }
+    goTo(current + 1);
+  });
+
+  // keyboard
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft') goTo(current - 1);
+    if (e.key === 'ArrowRight') goTo(current + 1);
+  });
+
+  render();
+</script>
+
+</body>
+</html>
