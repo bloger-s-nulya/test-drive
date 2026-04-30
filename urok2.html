@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Урок 2 · Гайд — Почему нельзя сразу продавать в блоге</title>
+<title>Урок 2 · Гайд — Почему нельзя сразу продавать</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -726,9 +726,11 @@
     progressText.textContent = `Слайд ${current + 1} из ${total}`;
     prevBtn.disabled = current === 0;
     if (current === total - 1) {
-      nextBtn.textContent = 'К следующему шагу →';
+      nextBtn.textContent = '🎉 Завершить';
+      nextBtn.classList.add('btn--primary');
     } else {
       nextBtn.textContent = 'Дальше →';
+      nextBtn.classList.remove('btn--primary');
     }
   }
 
@@ -742,10 +744,7 @@
   prevBtn.addEventListener('click', () => goTo(current - 1));
   nextBtn.addEventListener('click', () => {
     if (current === total - 1) {
-      // На финальном слайде — заглушка для перехода к видео Насти
-      // Тех. специалист должен заменить эту строку на реальный переход
-      // window.location.href = 'URL_следующего_шага';
-      alert('Здесь будет переход к видео урока «Контент-план» от Насти. Тех. специалисту заменить на реальный URL.');
+      launchCelebration();
       return;
     }
     goTo(current + 1);
@@ -756,6 +755,104 @@
     if (e.key === 'ArrowLeft') goTo(current - 1);
     if (e.key === 'ArrowRight') goTo(current + 1);
   });
+
+  // ── Конфетти + поздравление ──
+  function launchCelebration() {
+    // Оверлей с поздравлением
+    const overlay = document.createElement('div');
+    overlay.style.cssText = `
+      position: fixed; inset: 0; z-index: 9998;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(26,26,26,0.72);
+      backdrop-filter: blur(6px);
+      animation: fadeInOv .3s ease;
+    `;
+    const card = document.createElement('div');
+    card.style.cssText = `
+      background: #FFFFFF; border-radius: 24px;
+      padding: 40px 44px; text-align: center;
+      max-width: 420px; width: 90%;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.18);
+      animation: popIn .35s cubic-bezier(.34,1.56,.64,1);
+    `;
+    card.innerHTML = `
+      <div style="font-size:52px;margin-bottom:16px;">🎉</div>
+      <div style="font-family:'Unbounded',sans-serif;font-weight:500;font-size:22px;letter-spacing:-0.02em;color:#1A1A1A;margin-bottom:12px;line-height:1.2;">
+        Гайд пройден!
+      </div>
+      <div style="font-family:'Manrope',sans-serif;font-size:15px;color:#4A4D52;line-height:1.6;">
+        Ты разобрался, как на самом деле работает монетизация блога.<br>
+        Теперь — практика. Впереди урок-практикум от Насти.
+      </div>
+    `;
+    overlay.appendChild(card);
+    document.body.appendChild(overlay);
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) {
+        overlay.style.animation = 'fadeOutOv .25s ease forwards';
+        setTimeout(() => overlay.remove(), 250);
+      }
+    });
+
+    // Конфетти
+    const canvas = document.createElement('canvas');
+    canvas.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;';
+    document.body.appendChild(canvas);
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const COLORS = ['#C4F542','#B8E83D','#1A1A1A','#FFFFFF','#4A4D52','#E4E6E9','#0F1A00'];
+    const pieces = Array.from({length: 140}, () => ({
+      x: Math.random() * canvas.width,
+      y: -20 - Math.random() * 160,
+      w: 8 + Math.random() * 12,
+      h: 5 + Math.random() * 7,
+      color: COLORS[Math.floor(Math.random() * COLORS.length)],
+      angle: Math.random() * Math.PI * 2,
+      spin: (Math.random() - 0.5) * 0.2,
+      vx: (Math.random() - 0.5) * 4,
+      vy: 2.8 + Math.random() * 4,
+      opacity: 1,
+    }));
+
+    let frame = 0;
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      let alive = false;
+      pieces.forEach(p => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.05; // гравитация
+        p.angle += p.spin;
+        if (frame > 90) p.opacity -= 0.013;
+        if (p.y < canvas.height + 30 && p.opacity > 0) alive = true;
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, p.opacity);
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.angle);
+        ctx.fillStyle = p.color;
+        ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+        ctx.restore();
+      });
+      frame++;
+      if (alive) requestAnimationFrame(animate);
+      else canvas.remove();
+    }
+    animate();
+  }
+
+  // Анимации для оверлея
+  const styleEl = document.createElement('style');
+  styleEl.textContent = `
+    @keyframes fadeInOv { from { opacity:0 } to { opacity:1 } }
+    @keyframes fadeOutOv { from { opacity:1 } to { opacity:0 } }
+    @keyframes popIn {
+      from { opacity:0; transform: scale(0.85) translateY(20px); }
+      to   { opacity:1; transform: scale(1) translateY(0); }
+    }
+  `;
+  document.head.appendChild(styleEl);
 
   render();
 </script>
