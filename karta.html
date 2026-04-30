@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Гайд · Как блог превращается в доход</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #FFFFFF;
+    --bg-soft: #F5F6F7;
+    --bg-muted: #EDEEF0;
+    --ink: #1A1A1A;
+    --ink-2: #4A4D52;
+    --ink-3: #8A8E94;
+    --line: #E4E6E9;
+    --accent: #C4F542;
+    --accent-strong: #B8E83D;
+    --accent-ink: #0F1A00;
+    --radius-sm: 10px;
+    --radius-md: 16px;
+    --radius-lg: 24px;
+    --radius-pill: 999px;
+    --font-display: 'Unbounded', ui-sans-serif, system-ui, sans-serif;
+    --font-body: 'Manrope', ui-sans-serif, system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  }
+
+  html, body { background: var(--bg); }
+  body {
+    font-family: var(--font-body);
+    color: var(--ink);
+    font-size: 16px;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 56px 24px 100px;
+  }
+
+  /* ─── Шапка ─── */
+  .header {
+    margin-bottom: 56px;
+    padding-bottom: 40px;
+    border-bottom: 1px solid var(--line);
+  }
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin-bottom: 16px;
+  }
+
+  /* ─── Заголовок в зелёном блоке ─── */
+  .title-accent {
+    display: inline;
+    background: var(--accent);
+    color: var(--accent-ink);
+    padding: 2px 6px;
+    border-radius: 6px;
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(26px, 5vw, 40px);
+    line-height: 1.4;
+    letter-spacing: -0.025em;
+  }
+  .title-wrap {
+    margin-bottom: 20px;
+    line-height: 1.4;
+  }
+  .header-lead {
+    font-size: 17px;
+    color: var(--ink-2);
+    line-height: 1.6;
+    max-width: 600px;
+  }
+
+  /* ─── Секции ─── */
+  .section {
+    margin-bottom: 64px;
+  }
+  .section-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin-bottom: 10px;
+  }
+  h2 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(21px, 3.5vw, 28px);
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    margin-bottom: 16px;
+  }
+  h3 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 18px;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+    margin-bottom: 10px;
+  }
+  p {
+    color: var(--ink);
+    margin-bottom: 16px;
+  }
+  p:last-child { margin-bottom: 0; }
+  p.muted { color: var(--ink-2); }
+
+  /* ─── Key point ─── */
+  .key-point {
+    border-left: 3px solid var(--accent);
+    background: var(--bg-soft);
+    padding: 16px 20px;
+    margin: 24px 0;
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  }
+  .key-point__label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin-bottom: 6px;
+  }
+  .key-point__text {
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--ink);
+  }
+
+  /* ─── Accent callout — нано/микро ─── */
+  .accent-callout {
+    background: var(--accent);
+    border-radius: var(--radius-md);
+    padding: 22px 24px;
+    margin: 28px 0;
+  }
+  .accent-callout__label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent-ink);
+    opacity: 0.7;
+    margin-bottom: 8px;
+  }
+  .accent-callout__text {
+    font-weight: 700;
+    font-size: 17px;
+    line-height: 1.4;
+    color: var(--accent-ink);
+    margin-bottom: 8px;
+  }
+  .accent-callout__sub {
+    font-size: 14px;
+    color: var(--accent-ink);
+    opacity: 0.8;
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  /* ─── Big quote ─── */
+  .big-quote {
+    background: var(--ink);
+    color: #FFFFFF;
+    border-radius: var(--radius-lg);
+    padding: 32px 30px;
+    margin: 32px 0;
+    text-align: center;
+  }
+  .big-quote__text {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(18px, 3vw, 24px);
+    line-height: 1.35;
+    letter-spacing: -0.015em;
+    color: #FFFFFF;
+    margin-bottom: 10px;
+  }
+  .big-quote__sub {
+    font-size: 13px;
+    color: rgba(255,255,255,0.55);
+    font-family: var(--font-mono);
+    letter-spacing: 0.04em;
+    margin: 0;
+  }
+
+  /* ─── Divider ─── */
+  .divider {
+    border: none;
+    border-top: 1px solid var(--line);
+    margin: 48px 0;
+  }
+
+  /* ─── Check list ─── */
+  .check-list {
+    list-style: none;
+    padding: 0;
+    margin: 16px 0;
+  }
+  .check-list li {
+    padding: 10px 0 10px 28px;
+    border-bottom: 1px solid var(--line);
+    position: relative;
+    font-size: 15px;
+    color: var(--ink);
+  }
+  .check-list li:last-child { border-bottom: none; }
+  .check-list li::before {
+    content: "→";
+    position: absolute;
+    left: 0;
+    top: 10px;
+    color: var(--accent-ink);
+    font-weight: 700;
+  }
+
+  /* ─── Путь монетизации — вертикальный таймлайн ─── */
+  .path {
+    margin: 24px 0;
+    position: relative;
+  }
+  .path::before {
+    content: '';
+    position: absolute;
+    left: 23px;
+    top: 40px;
+    bottom: 40px;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--accent), var(--bg-muted));
+    border-radius: 2px;
+  }
+  .path-item {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 36px;
+    align-items: flex-start;
+    position: relative;
+  }
+  .path-item:last-child { margin-bottom: 0; }
+  .path-dot {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 15px;
+    position: relative;
+    z-index: 1;
+  }
+  .path-dot--accent { background: var(--accent); color: var(--accent-ink); }
+  .path-dot--soft {
+    background: var(--bg-soft);
+    color: var(--ink-2);
+    border: 1.5px solid var(--line);
+  }
+  .path-dot--dark { background: var(--ink); color: #FFFFFF; }
+  .path-body { flex: 1; padding-top: 10px; }
+  .path-tag {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: var(--radius-pill);
+    margin-bottom: 8px;
+  }
+  .path-tag--start { background: var(--accent); color: var(--accent-ink); }
+  .path-tag--mid { background: var(--bg-muted); color: var(--ink-2); }
+  .path-tag--top { background: var(--ink); color: #FFFFFF; }
+  .path-title {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 18px;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    margin-bottom: 6px;
+  }
+  .path-desc {
+    font-size: 14px;
+    color: var(--ink-2);
+    line-height: 1.55;
+    margin-bottom: 10px;
+  }
+  .path-when {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--ink-3);
+    letter-spacing: 0.04em;
+    margin-bottom: 6px;
+    display: block;
+  }
+  .path-example {
+    margin-top: 10px;
+    background: var(--bg-soft);
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    font-size: 13px;
+    color: var(--ink-2);
+    line-height: 1.5;
+  }
+  .path-example strong { color: var(--ink); }
+
+  /* ─── Практика ─── */
+  .practice-box {
+    border: 1.5px dashed var(--line);
+    border-radius: var(--radius-md);
+    padding: 22px 24px;
+    margin: 20px 0 0;
+    background: var(--bg-soft);
+  }
+  .practice-box__label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent-ink);
+    background: var(--accent);
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: var(--radius-pill);
+    margin-bottom: 12px;
+  }
+  .practice-box h3 {
+    font-size: 16px;
+    margin-bottom: 8px;
+  }
+  .practice-box p {
+    font-size: 14px;
+    color: var(--ink-2);
+    margin-bottom: 14px;
+  }
+  .practice-box textarea {
+    width: 100%;
+    min-height: 80px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--ink);
+    resize: vertical;
+    background: var(--bg);
+    transition: border-color .15s ease;
+  }
+  .practice-box textarea:focus {
+    outline: none;
+    border-color: var(--ink);
+  }
+  .practice-box textarea::placeholder {
+    color: var(--ink-3);
+  }
+
+  /* ─── Highlight box — FitStars ─── */
+  .highlight-box {
+    border: 2px solid var(--accent);
+    border-radius: var(--radius-md);
+    padding: 24px 26px;
+    margin: 28px 0;
+    position: relative;
+  }
+  .highlight-box__badge {
+    position: absolute;
+    top: -13px;
+    left: 20px;
+    background: var(--accent);
+    color: var(--accent-ink);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: var(--radius-pill);
+  }
+  .highlight-box h3 { margin-top: 8px; margin-bottom: 8px; }
+
+  /* ─── CTA блок ─── */
+  .cta-block {
+    background: var(--ink);
+    border-radius: var(--radius-lg);
+    padding: 40px 36px;
+    text-align: center;
+    margin-top: 56px;
+  }
+  .cta-block__eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+  .cta-block h2 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(20px, 3.5vw, 28px);
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: #FFFFFF;
+    margin-bottom: 24px;
+  }
+  .cta-btn {
+    display: inline-block;
+    background: var(--accent);
+    color: var(--accent-ink);
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 15px;
+    padding: 16px 32px;
+    border-radius: var(--radius-pill);
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: background .15s ease;
+    line-height: 1.3;
+  }
+  .cta-btn:hover { background: var(--accent-strong); }
+
+  /* ─── Footer ─── */
+  .footer {
+    margin-top: 56px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    color: var(--ink-3);
+    text-align: center;
+  }
+
+  @media (max-width: 540px) {
+    .wrap { padding: 40px 18px 80px; }
+    .title-accent { font-size: 24px; }
+    h2 { font-size: 19px; }
+    .path::before { left: 19px; }
+    .path-dot { width: 40px; height: 40px; font-size: 13px; }
+    .big-quote { padding: 24px 20px; }
+    .cta-block { padding: 32px 22px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ════════ ШАПКА ════════ -->
+  <header class="header">
+    <div class="eyebrow">Тест-драйв курса «Блогер с нуля» · Урок 3 · Гайд</div>
+    <div class="title-wrap">
+      <span class="title-accent">Как блог превращается в доход</span>
+    </div>
+    <p class="header-lead">Большинство думает, что заработок на блоге — это только реклама. На самом деле это большой и классный мир возможностей. И самое важное — что начать можно гораздо раньше, чем кажется.</p>
+  </header>
+
+
+  <!-- ════════ 1. МИФ О РЕКЛАМЕ ════════ -->
+  <section class="section">
+    <div class="section-label">Начнём с главного мифа</div>
+    <h2>«Зарабатывать на блоге = размещать рекламу»</h2>
+
+    <p>Когда мы думаем о деньгах в блоге, первое, что приходит в голову — рекламные интеграции. Большой блогер упоминает продукт, получает деньги. Логично, понятно, желанно.</p>
+
+    <p>Проблема в том, что за этой моделью стоит большой путь. И если ждать рекламодателей как первого источника дохода — ждать придётся долго. Если знать, с чего реально начинать и как выстраивать монетизацию по шагам — первые деньги появляются куда раньше, чем ожидаешь.</p>
+
+    <div class="key-point">
+      <div class="key-point__label">Главная мысль</div>
+      <div class="key-point__text">Монетизация блога — это не одна кнопка «включить рекламу». Это путь с разными остановками, и на каждой из них ты можешь зарабатывать по-своему.</div>
+    </div>
+
+    <div class="accent-callout">
+      <div class="accent-callout__label">Важно знать</div>
+      <div class="accent-callout__text">Нано и микроблогеры — сейчас одни из самых востребованных у брендов.</div>
+      <p class="accent-callout__sub">Кажется, что нужна огромная аудитория. На деле — многие бренды начинают сотрудничать буквально с тысячи живых подписчиков. Потому что у маленьких блогов настоящий контакт с аудиторией. Им доверяют. Их рекомендации работают. Это меняет правила игры в твою пользу.</p>
+    </div>
+
+    <p class="muted">Ниже — карта всех возможностей. Не строгая инструкция, а ориентир: чтобы ты видел, куда вообще можно идти и что тебя ждёт впереди.</p>
+  </section>
+
+  <hr class="divider">
+
+
+  <!-- ════════ 2. ГЛАВНЫЙ КАПИТАЛ ════════ -->
+  <section class="section">
+    <div class="section-label">Прежде чем смотреть на виды дохода</div>
+    <h2>Твой главный капитал — не подписчики. Навык.</h2>
+
+    <p>Всё, что мы сейчас разберём — партнёрки, амбассадорство, реклама, свои продукты — это следствие одного навыка.</p>
+
+    <ul class="check-list">
+      <li>Умение собирать живую аудиторию</li>
+      <li>Умение быть интересным — регулярно, а не рывками</li>
+      <li>Умение говорить своим голосом так, чтобы тебе доверяли</li>
+    </ul>
+
+    <p>Этот навык универсален. Он работает на любой площадке, в любой нише, при любом количестве подписчиков. И именно он открывает все остановки на пути монетизации.</p>
+
+    <div class="big-quote">
+      <div class="big-quote__text">Аудитория, которая тебе доверяет — это актив, который никуда не исчезает. Площадки меняются. А доверие и умение его создавать — остаются.</div>
+      <div class="big-quote__sub">Главный принцип монетизации блога</div>
+    </div>
+
+    <p class="muted">Именно поэтому в курсе мы начинаем не с инструментов монетизации, а с фундамента — позиционирование, контент-система, доверие. Всё остальное появится следом.</p>
+  </section>
+
+  <hr class="divider">
+
+
+  <!-- ════════ 3. ПУТЬ МОНЕТИЗАЦИИ ════════ -->
+  <section class="section">
+    <div class="section-label">Карта возможностей</div>
+    <h2>Шесть способов зарабатывать на блоге</h2>
+    <p class="muted" style="margin-bottom: 32px;">Верхние модели доступны раньше — нижние требуют большей аудитории и опыта. Но это не строгая лестница: у каждого путь свой.</p>
+
+    <div class="path">
+
+      <!-- 1. Партнёрские программы -->
+      <div class="path-item">
+        <div class="path-dot path-dot--accent">1</div>
+        <div class="path-body">
+          <span class="path-tag path-tag--start">Можно начать раньше всего</span>
+          <div class="path-title">Партнёрские программы</div>
+          <div class="path-desc">Ты рекомендуешь продукты или сервисы, которые сам используешь и в которые веришь — через свою реферальную ссылку. Когда кто-то покупает по ней, ты получаешь процент.</div>
+          <span class="path-when">Когда уместно: как только у тебя есть аудитория, которая тебе доверяет — даже небольшая.</span>
+          <div class="path-example">
+            <strong>Важно:</strong> работает только тогда, когда ты реально веришь в продукт. Аудитория моментально чувствует, когда человек рекомендует «лишь бы заработать». Один такой пост — и доверие уходит надолго.
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Амбассадорство -->
+      <div class="path-item">
+        <div class="path-dot path-dot--accent">2</div>
+        <div class="path-body">
+          <span class="path-tag path-tag--start">Доступно раньше, чем кажется</span>
+          <div class="path-title">Амбассадорство</div>
+          <div class="path-desc">Ты становишься постоянным представителем бренда. Не разовая интеграция, а долгосрочное партнёрство: ты регулярно рассказываешь про продукт, живёшь с ним, показываешь его в своём контексте.</div>
+          <span class="path-when">Когда уместно: когда у тебя есть живая аудитория, которая тебе доверяет, и ниша пересекается с брендом. Нано и микроблогеры здесь особенно ценны — именно из-за настоящего контакта с аудиторией.</span>
+          <div class="path-example">
+            <strong>Пример:</strong> программа амбассадоров FitStars открыта для блогеров с живой аудиторией и интересом к теме фитнеса, здоровья, активного образа жизни. Подробности — в основном курсе.
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Консультации и услуги -->
+      <div class="path-item">
+        <div class="path-dot path-dot--soft">3</div>
+        <div class="path-body">
+          <span class="path-tag path-tag--mid">Для экспертных блогов</span>
+          <div class="path-title">Консультации и услуги</div>
+          <div class="path-desc">Если в твоём блоге есть экспертиза — ты можешь продавать её напрямую. Разбор, консультация, сопровождение, сделать что-то под ключ. Блог в этом случае работает как поток тёплых клиентов.</div>
+          <span class="path-when">Когда уместно: когда люди начинают писать в директ «а можно с тобой поработать?» — это сигнал, что пора оформить предложение.</span>
+          <div class="path-example">
+            <strong>Важно:</strong> это не только для «серьёзных экспертов». Мама двоих детей, которая ведёт блог про организацию быта, может консультировать по тайм-менеджменту. Учитель может репетиторствовать. Блог создаёт доверие — консультация его монетизирует.
+          </div>
+
+          <!-- Практика после консультаций -->
+          <div class="practice-box">
+            <span class="practice-box__label">Практика</span>
+            <h3>С какими брендами ты бы хотел сотрудничать?</h3>
+            <p>Не думай о цифрах подписчиков и «готовности». Просто запиши первое, что приходит в голову — бренды, продукты, сервисы, которые тебе близки и которые ты с удовольствием рекомендовал бы своей аудитории.</p>
+            <textarea placeholder="Например: бренды спортивной одежды, онлайн-платформы для обучения, книжные магазины, марки кофе, сервисы для организации времени..."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. Поддержка аудитории -->
+      <div class="path-item">
+        <div class="path-dot path-dot--soft">4</div>
+        <div class="path-body">
+          <span class="path-tag path-tag--mid">Когда есть лояльное ядро</span>
+          <div class="path-title">Поддержка аудитории</div>
+          <div class="path-desc">Часть твоей аудитории готова поддерживать тебя напрямую — потому что ценит то, что ты делаешь. Это могут быть платная подписка с эксклюзивным контентом или благодарность за полезный материал.</div>
+          <span class="path-when">Когда уместно: когда в комментариях тебе регулярно говорят «спасибо» и «это так помогло». Значит, ядро уже есть.</span>
+          <div class="path-example">
+            <strong>Честно:</strong> это редко становится основным источником дохода, но как дополнительный — работает и греет душу.
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. Рекламные интеграции -->
+      <div class="path-item">
+        <div class="path-dot path-dot--soft">5</div>
+        <div class="path-body">
+          <span class="path-tag path-tag--mid">Нано и микро особенно востребованы</span>
+          <div class="path-title">Рекламные интеграции</div>
+          <div class="path-desc">Бренды платят тебе за упоминание своего продукта в посте, рилсе или сторис. И здесь важно понимать: небольшой блог с живой вовлечённой аудиторией часто приносит бренду больше продаж, чем блог-миллионник с равнодушными подписчиками.</div>
+          <span class="path-when">Когда уместно: когда есть регулярный охват и живые реакции. Многие бренды начинают сотрудничество буквально с тысячи активных подписчиков.</span>
+          <div class="path-example">
+            <strong>Современная реальность:</strong> бренды давно научились смотреть не на цифру подписчиков, а на вовлечённость и доверие аудитории. Это меняет правила игры в пользу маленьких, но живых блогов.
+          </div>
+        </div>
+      </div>
+
+      <!-- 6. Свои продукты -->
+      <div class="path-item">
+        <div class="path-dot path-dot--dark">6</div>
+        <div class="path-body">
+          <span class="path-tag path-tag--top">Высшая точка</span>
+          <div class="path-title">Свои продукты</div>
+          <div class="path-desc">Курсы, гайды, вебинары, шаблоны, мерч, платные подписки на закрытый контент — всё, что ты создаёшь и продаёшь сам. Самая масштабируемая модель: один продукт может продаваться сотни раз.</div>
+          <span class="path-when">Когда уместно: когда аудитория сама формулирует запрос — «сделай уже курс», «напиши гайд», «как у тебя записаться». Это сигнал, что рынок уже есть.</span>
+          <div class="path-example">
+            <strong>С чего начать:</strong> не с большого курса. С маленького гайда или мастер-класса. Проверь спрос — и только потом вкладывай большие силы.
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <hr class="divider">
+
+
+  <!-- ════════ 4. ГЛАВНАЯ МЫСЛЬ ════════ -->
+  <section class="section">
+    <div class="section-label">Главная мысль этого гайда</div>
+    <h2>Монетизация — это не финиш. Это направление.</h2>
+
+    <p>Смотри на эту карту не как на строгую лестницу. А как на пространство, в котором ты можешь двигаться влево-вправо — в зависимости от того, что тебе близко, что работает в твоей нише, что даёт результат.</p>
+
+    <p>Кто-то начинает с партнёрской программы и остаётся там. Кто-то сразу идёт в консультации. Кто-то собирает свои продукты уже на первом году. Всё это рабочие пути.</p>
+
+    <div class="key-point">
+      <div class="key-point__label">Самое главное</div>
+      <div class="key-point__text">Твой самый главный капитал — аудитория и навык её собирать, быть интересным. Он первичен и он даёт тебе все эти возможности.</div>
+    </div>
+
+    <p>И именно этот навык мы строим на курсе. Не учим продавать с первого поста. Учим быть интересными — регулярно, системно, своим голосом. А монетизация появляется как естественное продолжение.</p>
+  </section>
+
+  <hr class="divider">
+
+
+  <!-- ════════ 5. FITSTARS ════════ -->
+  <section class="section">
+    <div class="highlight-box">
+      <div class="highlight-box__badge">FitStars · Старт рядом</div>
+      <h3>Амбассадорство FitStars — первый шаг, который доступен раньше, чем кажется</h3>
+      <p>Программа амбассадоров FitStars открыта для блогеров, у которых есть живая аудитория — пусть даже небольшая — и интерес к теме фитнеса, здоровья, активного образа жизни.</p>
+      <p>Нано и микроблогеры в ней особенно ценны: настоящий контакт с аудиторией, доверие, живые рекомендации. С ними интересно работать вдолгую.</p>
+      <p class="muted">Конкретные критерии, шаги входа и рекомендации — в основном курсе. Там отдельный модуль, который ведут действующие амбассадоры FitStars.</p>
+    </div>
+  </section>
+
+
+  <!-- ════════ CTA ════════ -->
+  <div class="cta-block">
+    <div class="cta-block__eyebrow">Курс «Блогер с нуля» · FitStars</div>
+    <h2>Всё это подробно разбираем на курсе</h2>
+    <a href="https://bloggerboost.ru/" class="cta-btn">Присоединиться со скидкой 30% → действует 48 часов</a>
+  </div>
+
+  <footer class="footer">
+    Тест-драйв курса «Блогер с нуля» · FitStars
+  </footer>
+
+</div>
+</body>
+</html>
