@@ -483,8 +483,8 @@
     <h2>Видите? За каждым страхом — простой шаг.</h2>
     <p>Не «стать бесстрашной», а просто разбить большое на маленькое и начать делать. Проявленность — это навык. Он тренируется.</p>
     <p class="mantra">«Идите туда, куда страшно». Только действие даёт новый результат.</p>
-    <p class="final-body">Чтобы начать действовать и зарабатывать на своём блоге, приглашаем вас на курс «Блогер с нуля» от FitStars. В течение 5 недель вас ждут уроки, задания, поддержка кураторов и однокурсников, регулярные действия — чтобы ваш блог начал расти и меняться сразу.</p>
-    <a class="cta" href="#" id="ctaBtn">Попробовать тест-драйв курса →</a>
+    <p class="final-body">Чтобы начать действовать и монетизировать свой блог, не обязательно иметь красивую квартиру или особенный телефон. Важно просто начать. Всё это разбираем на нашем курсе «Блогер с нуля». Подписывайтесь на наш telegram-канал — будете в курсе всех событий.</p>
+    <a class="cta" href="https://t.me/+6z9VlDoKqME3NzQy" target="_blank" rel="noopener" id="ctaBtn">Подписаться на telegram-канал →</a>
     <button class="replay" id="replay">пробить заново</button>
   </div>
 
@@ -504,8 +504,6 @@ hammerBtn.addEventListener('click', () => {
     document.body.classList.add('hammer-active');
     document.body.style.cursor = HAMMER_CURSOR;
     hammerBtn.querySelector('.hicon').textContent = '🔨';
-    hammerBtn.querySelector('span + *') // text node
-    // update button text
     hammerBtn.childNodes.forEach(n => { if (n.nodeType === 3) n.textContent = ' Молоток активен'; });
   } else {
     document.body.classList.remove('hammer-active');
@@ -582,7 +580,6 @@ function syncHeights() {
     const face = el.querySelector('.face');
     const back = el.querySelector('.back');
 
-    // временно делаем back видимым вне потока чтобы измерить
     back.style.visibility = 'hidden';
     back.style.opacity = '0';
     back.style.position = 'static';
@@ -594,7 +591,6 @@ function syncHeights() {
     const backH = back.offsetHeight;
     const maxH  = Math.max(faceH, backH);
 
-    // восстанавливаем
     back.style.position  = '';
     back.style.visibility = '';
     back.style.opacity   = '';
@@ -605,7 +601,6 @@ function syncHeights() {
   });
 }
 
-// запускаем после загрузки шрифтов
 if (document.fonts && document.fonts.ready) {
   document.fonts.ready.then(syncHeights);
 } else {
@@ -690,11 +685,6 @@ document.getElementById('replay').addEventListener('click', () => {
   finalEl.classList.remove('show');
   document.querySelectorAll('.stone').forEach(s => s.classList.remove('broken'));
   window.scrollTo({ top: 0, behavior: 'smooth' });
-});
-
-document.getElementById('ctaBtn').addEventListener('click', (e) => {
-  e.preventDefault();
-  alert('Сюда подставим ссылку на тест-драйв курса Fitstars');
 });
 </script>
 </body>
