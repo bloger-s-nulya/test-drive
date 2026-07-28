@@ -66,7 +66,8 @@
   .dl-list li{position:relative;padding-left:22px;font-size:14px;color:var(--ink-2);font-weight:500;}
   .dl-list li::before{content:'';position:absolute;left:2px;top:8px;width:7px;height:7px;border-radius:50%;background:var(--accent-2);}
   .dl-list b{color:var(--ink);}
-  .dl-sub{font-size:12px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3);margin:20px 0 10px;}
+  .dl-sub{font-size:12px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3);margin:20px 0 10px;display:flex;align-items:center;gap:9px;}
+  .dl-sub::before{content:'';width:16px;height:3px;border-radius:2px;background:var(--accent-2);flex-shrink:0;}
   .dl-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
   .dl-row.one{grid-template-columns:1fr;max-width:380px;}
   /* кликабельные ссылки в тексте */
@@ -260,7 +261,7 @@
       <div class="k">Три типа каналов в МАХ</div>
       <div class="type"><span class="tag">Старт</span><div><b>Приватный</b> — для всех. Не виден в поиске, рост только по ссылке-приглашению. Это путь новичка.</div></div>
       <div class="type mut"><span class="tag">А+</span><div><b>Публичный</b> — для авторов с отметкой А+ (от 10&nbsp;000 подписчиков хотя бы на одной площадке + регистрация в реестре РКН).</div></div>
-      <div class="type mut"><span class="tag">Бизнес</span><div><b>Бизнес-канал</b> — для ИП и юрлиц. Нужен ИНН и (для юрлиц) ЭЦП.</div></div>
+      <div class="type mut"><span class="tag">Бизнес</span><div><b>Бизнес-канал</b> — для ИП и юрлиц. Нужен ИНН и (для юрлиц) ЭЦП. Регистрация — на Госуслугах.</div></div>
     </div>
   </div>
 
