@@ -52,12 +52,18 @@
     background:var(--bg);border:1px solid var(--line);border-radius:var(--radius-lg);
     box-shadow:var(--shadow-sm);padding:26px 26px;margin-top:22px;
   }
-  /* Роль 2: Заголовок секции */
+  /* Роль 2: Заголовок секции — выделенная плашка сверху карточки */
   .sec-h{
-    font-size:13px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
-    color:var(--ink-3);margin-bottom:16px;display:flex;align-items:center;gap:10px;
+    font-size:13.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--ink);
+    margin:-26px -26px 22px;
+    padding:15px 26px;
+    background:linear-gradient(90deg, rgba(212,255,61,.30), rgba(212,255,61,.06));
+    border-bottom:1px solid var(--line);
+    border-radius:var(--radius-lg) var(--radius-lg) 0 0;
+    display:flex;align-items:center;gap:10px;
   }
-  .sec-h::before{content:'';width:22px;height:3px;border-radius:2px;background:var(--accent-2);}
+  .sec-h::before{content:'';width:20px;height:3px;border-radius:2px;background:var(--accent-2);flex-shrink:0;}
 
   /* ---------- Скачать ---------- */
   .dl-note{color:var(--ink-2);font-size:14px;font-weight:500;margin-bottom:14px;}
@@ -268,13 +274,14 @@
 
   <!-- Чек-лист -->
   <div class="card">
+    <div class="sec-h">Настройка канала — чек-лист</div>
     <div class="tip">
       <span class="ti">📱</span>
       <span class="tt"><b>Перед стартом.</b> Установите МАХ (см. блок «Где открыть МАХ» выше) и зарегистрируйтесь по <b>номеру телефона</b> — код подтверждения придёт по SMS. Разрешать доступ к контактам необязательно. После входа вы окажетесь на главной с разделом «Чаты» — отсюда и начинаем.</span>
     </div>
     <div class="progress-wrap">
       <div class="progress-top">
-        <span class="t">Настройка канала</span>
+        <span class="t">Прогресс</span>
         <span class="c"><b id="cDone">0</b> / <span id="cAll">8</span> шагов</span>
       </div>
       <div class="bar"><span id="barFill"></span></div>
