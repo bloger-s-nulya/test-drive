@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Карта нейросетей для блогера · FitStars</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  /* ================================================================
+     ТИПОГРАФИЧЕСКАЯ ШКАЛА — ровно 4 роли, курсивов нет.
+     Р1 Заголовок  — h1, .sec-h, .final h3
+     Р2 Подзаголовок — .st (заголовок карточки), 15.5px/700
+     Р3 Текст      — .tx и всё остальное, 14px, цвет --ink-2
+     Р4 Метка      — .lbl, .brand, .stamp — 11–12px CAPS, разрядка
+     Инлайновые font-size / color / font-weight в разметке запрещены.
+     ================================================================ */
+  :root{
+    --bg:#ffffff; --bg-soft:#f7f7f5; --bg-muted:#eeeeea;
+    --ink:#1a1a1a; --ink-2:#4a4d52; --ink-3:#777770;
+    --line:#e2e2dd; --line-2:#d8d8d4;
+    --accent:#d4ff3d; --accent-2:#a8cc00; --accent-ink:#1c2600;
+    --gold:#b98900; --gold-bg:#fff8dc; --gold-line:#f0e3a6;
+    --radius-sm:10px; --radius-md:14px; --radius-lg:20px; --radius-pill:999px;
+    --shadow-sm:0 1px 3px rgba(20,22,16,.05);
+    --font:'Manrope',ui-sans-serif,system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{min-height:100%;}
+  body{
+    font-family:var(--font); color:var(--ink); background:var(--bg-soft);
+    padding:40px 20px 80px; -webkit-font-smoothing:antialiased; line-height:1.55;
+  }
+  .wrap{max-width:820px;margin:0 auto;}
+
+  /* ---------- Р4 Метка ---------- */
+  .brand{
+    font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--ink-3);text-align:center;margin-bottom:16px;
+  }
+  .stamp-row{display:flex;justify-content:center;margin-bottom:16px;}
+  .stamp{
+    display:inline-flex;align-items:center;gap:8px;padding:7px 16px;
+    background:var(--accent);color:var(--accent-ink);border-radius:var(--radius-pill);
+    font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+  }
+  .lbl{
+    font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--ink-3);
+  }
+
+  /* ---------- Р1 Заголовок ---------- */
+  h1{
+    font-size:clamp(28px,5vw,44px);font-weight:800;line-height:1.06;letter-spacing:-.02em;
+    text-align:center;margin-bottom:14px;
+  }
+  .lead{
+    text-align:center;max-width:580px;margin:0 auto;color:var(--ink-2);
+    font-size:clamp(15px,2vw,17px);font-weight:500;
+  }
+  .lead b{color:var(--ink);}
+
+  /* ---------- Плашки-метрики ---------- */
+  .pills{display:flex;flex-wrap:wrap;gap:9px;justify-content:center;margin-top:22px;}
+  .pill{
+    display:inline-flex;align-items:center;gap:8px;background:var(--bg);
+    border:1px solid var(--line);border-radius:var(--radius-pill);
+    padding:8px 15px;font-size:13px;font-weight:600;color:var(--ink-2);
+  }
+  .pill::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--accent-2);flex-shrink:0;}
+  .pill.mut::before{background:var(--line-2);}
+
+  /* ---------- Карточки-секции ---------- */
+  .card{
+    background:var(--bg);border:1px solid var(--line);border-radius:var(--radius-lg);
+    box-shadow:var(--shadow-sm);padding:26px;margin-top:22px;
+  }
+  .sec-h{
+    font-size:13.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--ink);
+    margin:-26px -26px 22px;padding:15px 26px;
+    background:linear-gradient(90deg, rgba(212,255,61,.30), rgba(212,255,61,.06));
+    border-bottom:1px solid var(--line);
+    border-radius:var(--radius-lg) var(--radius-lg) 0 0;
+    display:flex;align-items:center;gap:10px;
+  }
+  .sec-h::before{content:'';width:20px;height:3px;border-radius:2px;background:var(--accent-2);flex-shrink:0;}
+
+  /* ---------- Р3 Текст ---------- */
+  .tx{font-size:14px;color:var(--ink-2);font-weight:500;}
+  .tx b{color:var(--ink);font-weight:700;}
+  .tx + .tx{margin-top:12px;}
+  .st{font-size:15.5px;font-weight:700;color:var(--ink);line-height:1.35;}
+
+  /* ---------- Ключевая мысль ---------- */
+  .key{
+    border-left:3px solid var(--accent-2);background:var(--bg-soft);
+    border-radius:8px;padding:14px 16px;margin-bottom:16px;
+  }
+  .key .tx b{color:var(--ink);}
+
+  /* ---------- Маркированный список ---------- */
+  .bul{list-style:none;display:flex;flex-direction:column;gap:10px;margin-top:14px;}
+  .bul li{position:relative;padding-left:22px;font-size:14px;color:var(--ink-2);font-weight:500;}
+  .bul li::before{content:'';position:absolute;left:2px;top:8px;width:7px;height:7px;border-radius:50%;background:var(--accent-2);}
+  .bul b{color:var(--ink);font-weight:700;}
+  .bul.num{counter-reset:n;}
+  .bul.num li{padding-left:28px;}
+  .bul.num li::before{
+    counter-increment:n;content:counter(n);left:0;top:0;width:19px;height:19px;border-radius:6px;
+    background:var(--bg-muted);color:var(--ink-2);font-size:11px;font-weight:800;
+    display:flex;align-items:center;justify-content:center;
+  }
+
+  /* ---------- КАРТА: задача → инструмент → промпт ---------- */
+  .map-note{margin-bottom:18px;}
+  .row{
+    border:1px solid var(--line);border-radius:var(--radius-md);
+    padding:18px 20px;margin-bottom:12px;background:var(--bg);
+  }
+  .row:last-child{margin-bottom:0;}
+  .row-top{display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap;}
+  .row-n{
+    flex-shrink:0;width:30px;height:30px;border-radius:9px;background:var(--accent);
+    color:var(--accent-ink);display:flex;align-items:center;justify-content:center;
+    font-size:13px;font-weight:800;
+  }
+  .row-t{flex:1;min-width:200px;}
+  .tool{
+    flex-shrink:0;display:inline-flex;align-items:center;
+    background:var(--bg-muted);color:var(--ink-2);border-radius:var(--radius-pill);
+    padding:6px 13px;font-size:12px;font-weight:800;letter-spacing:.02em;
+  }
+  .prompt{
+    margin-top:13px;background:var(--bg-soft);border:1px solid var(--line);
+    border-left:3px solid var(--accent-2);border-radius:8px;padding:13px 15px;
+  }
+  .prompt .lbl{display:block;margin-bottom:6px;}
+  .prompt .tx{color:var(--ink);}
+  .fill{color:var(--accent-2);font-weight:700;}
+  .alt{margin-top:12px;}
+  .alt .lbl{margin-right:9px;}
+  @media(max-width:620px){
+    .row{padding:16px;}
+    .row-t{min-width:calc(100% - 44px);}
+    .tool{margin-left:44px;}
+  }
+
+  /* ---------- Ссылки «открыть» ---------- */
+  a{color:inherit;text-decoration:none;}
+  .go{
+    display:inline-flex;align-items:center;gap:7px;flex-shrink:0;
+    background:var(--accent);color:var(--accent-ink);border-radius:var(--radius-pill);
+    padding:8px 16px;font-size:12px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;
+    transition:background .16s,transform .1s;
+  }
+  .go:hover{background:var(--accent-2);}
+  .go:active{transform:scale(.97);}
+  .ln{font-weight:700;color:var(--ink);border-bottom:1px solid var(--accent-2);}
+  .ln:hover{background:var(--accent);}
+
+  /* ---------- Смежные нейросети ---------- */
+  .swap-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px;}
+  .swap{border:1px solid var(--line);border-radius:var(--radius-md);padding:16px 18px;background:var(--bg);}
+  .swap .st{margin-bottom:2px;}
+  .swap .lbl{display:block;margin-bottom:9px;}
+  .swap .go{margin-top:12px;}
+  @media(max-width:620px){.swap-grid{grid-template-columns:1fr;}}
+
+  /* ---------- Куда расти ---------- */
+  .grow{display:flex;gap:14px;padding:16px 0;border-bottom:1px solid var(--line);}
+  .grow:last-of-type{border-bottom:none;padding-bottom:4px;}
+  .grow:first-of-type{padding-top:0;}
+  .grow-ic{flex-shrink:0;width:34px;height:34px;border-radius:10px;background:var(--bg-muted);
+    display:flex;align-items:center;justify-content:center;font-size:16px;}
+  .grow .st{margin-bottom:4px;}
+  .grow .names{margin-top:7px;}
+  .grow .names .lbl{margin-right:9px;}
+
+  /* ---------- Инструменты ---------- */
+  .tool-card{
+    border:1px solid var(--line);border-radius:var(--radius-md);
+    padding:20px;margin-bottom:12px;background:var(--bg);
+  }
+  .tool-card:last-child{margin-bottom:0;}
+  .tool-head{display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap;}
+  .tool-head .tool-name{flex:1;min-width:150px;}
+  .tool-ic{
+    flex-shrink:0;width:38px;height:38px;border-radius:10px;background:var(--accent);
+    display:flex;align-items:center;justify-content:center;font-size:18px;
+  }
+  .tool-name .st{margin-bottom:2px;}
+  .tool-name .lbl{display:block;}
+  .kv{display:flex;gap:10px;margin-bottom:9px;}
+  .kv:last-child{margin-bottom:0;}
+  .kv .k{flex-shrink:0;width:96px;}
+  .kv .k .lbl{line-height:1.6;}
+  .kv .v{flex:1;}
+  @media(max-width:620px){
+    .kv{flex-direction:column;gap:2px;}
+    .kv .k{width:auto;}
+  }
+
+  /* ---------- Пара «как не надо / как надо» ---------- */
+  .pair{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px;}
+  .pair-box{border:1px solid var(--line);border-radius:var(--radius-md);padding:16px 18px;background:var(--bg-soft);}
+  .pair-box .lbl{display:block;margin-bottom:8px;}
+  .pair-box.good{background:#fbfff0;border-color:var(--accent-2);}
+  @media(max-width:620px){.pair{grid-template-columns:1fr;}}
+
+  /* ---------- Стоп-лист ---------- */
+  .stop{display:flex;gap:12px;padding:14px 0;border-bottom:1px solid var(--line);}
+  .stop:last-child{border-bottom:none;padding-bottom:0;}
+  .stop:first-child{padding-top:0;}
+  .stop-ic{flex-shrink:0;font-size:17px;line-height:1.4;}
+  .stop .st{margin-bottom:4px;}
+
+  /* ---------- Прогресс и шаги чек-листа ---------- */
+  .progress-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;}
+  .bar{height:8px;border-radius:var(--radius-pill);background:var(--bg-muted);overflow:hidden;}
+  .bar>span{display:block;height:100%;width:0;border-radius:var(--radius-pill);
+    background:linear-gradient(90deg,var(--accent-2),var(--accent));transition:width .45s cubic-bezier(.3,1.1,.5,1);}
+  .steps{margin-top:16px;display:flex;flex-direction:column;gap:10px;}
+  .step{
+    display:flex;gap:14px;background:var(--bg);border:1px solid var(--line);
+    border-radius:var(--radius-md);padding:16px 18px;cursor:pointer;
+    transition:border-color .18s,box-shadow .18s,background .18s;
+  }
+  .step:hover{border-color:var(--accent-2);box-shadow:var(--shadow-sm);}
+  .check{
+    flex-shrink:0;width:26px;height:26px;border-radius:8px;border:2px solid var(--line-2);
+    background:var(--bg);display:flex;align-items:center;justify-content:center;
+    transition:all .16s;margin-top:1px;
+  }
+  .check svg{width:15px;height:15px;stroke:var(--accent-ink);stroke-width:3;fill:none;
+    stroke-linecap:round;stroke-linejoin:round;opacity:0;transform:scale(.5);transition:all .16s;}
+  .step-b{flex:1;}
+  .step.done{background:#fbfff0;border-color:var(--accent-2);}
+  .step.done .check{background:var(--accent);border-color:var(--accent);}
+  .step.done .check svg{opacity:1;transform:scale(1);}
+  .step.done .st{color:var(--ink-3);text-decoration:line-through;text-decoration-color:var(--line-2);}
+
+  /* ---------- Подсказка ---------- */
+  .tip{
+    display:flex;gap:12px;background:var(--gold-bg);border:1px solid var(--gold-line);
+    border-radius:var(--radius-md);padding:15px 17px;margin-top:16px;
+  }
+  .tip .ti{flex-shrink:0;font-size:18px;line-height:1.3;}
+  .tip .tx{color:#5c4a10;}
+  .tip .tx b{color:#3d3208;}
+
+  /* ---------- Финал ---------- */
+  .final{
+    margin-top:22px;background:var(--ink);color:#fff;border-radius:var(--radius-lg);
+    padding:36px 32px;text-align:center;
+  }
+  .final h3{font-size:clamp(19px,3vw,24px);font-weight:800;letter-spacing:-.01em;margin-bottom:10px;}
+  .final .tx{color:#cfd1c9;max-width:470px;margin:0 auto;}
+  .final .tx + .tx{margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,.14);}
+  .final .tx b{color:var(--accent);}
+
+  .foot{text-align:center;margin-top:26px;}
+  .foot .lbl{color:var(--ink-3);}
+
+  @media print{
+    body{background:#fff;padding:0;}
+    .card{box-shadow:none;break-inside:avoid;}
+    .row,.tool-card,.step{break-inside:avoid;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="brand">FitStars</div>
+  <div class="stamp-row"><span class="stamp">✦ Бонус участникам эфира</span></div>
+  <h1>Карта нейросетей: какой инструмент под какую задачу блога</h1>
+  <p class="lead">Не сто сервисов, а <b>три инструмента</b>. Ниже карта: слева ваша задача, справа – чем её делать и что именно попросить.</p>
+
+  <div class="pills">
+    <span class="pill">3 базовых инструмента</span>
+    <span class="pill">9 задач блога</span>
+    <span class="pill">+ смежные, если что-то не открылось</span>
+    <span class="pill mut">8 минут на чтение</span>
+  </div>
+
+  <!-- ===== ГЛАВНОЕ ===== -->
+  <section class="card">
+    <div class="sec-h">Главное</div>
+    <div class="key">
+      <p class="tx"><b>Нейросеть не ведёт блог за вас. Она снимает черновую работу – ту, на которую уходит вечер, а ценности в ней ноль.</b></p>
+    </div>
+    <p class="tx">Начинающий блогер тонет не от нехватки инструментов, а от их избытка: попробовали пять сервисов, получили пять разрозненных результатов, бросили. Работает обратное – <b>один инструмент, одна задача, пока не станет привычкой</b>.</p>
+    <ul class="bul">
+      <li><b>Черновик появляется за минуту, а не за вечер.</b> Дальше вы переписываете его своим голосом – это быстрее, чем писать с нуля.</li>
+      <li><b>Пустой лист перестаёт пугать.</b> Нейросеть даёт десять вариантов, вы выбираете один.</li>
+      <li><b>Уходит рутина:</b> адаптация поста под три площадки, расшифровка голосового в текст, разбор цифр.</li>
+    </ul>
+  </section>
+
+  <!-- ===== КАРТА ===== -->
+  <section class="card">
+    <div class="sec-h">Карта: задача → чем делать → что попросить</div>
+    <p class="tx map-note">В квадратных скобках – ваши подстановки. Промпт, который сработал, сохраняйте в заметки: за месяц соберётся личный банк промптов под вашу нишу.</p>
+
+    <div class="row">
+      <div class="row-top">
+        <div class="row-n">1</div>
+        <div class="row-t"><p class="st">Понять, о чём вести блог</p></div>
+        <span class="tool">Perplexity</span>
+      </div>
+      <div class="prompt">
+        <span class="lbl">Что попросить</span>
+        <p class="tx">Найди, о чём пишут блогеры в нише <span class="fill">[домашние тренировки для мам]</span> во ВКонтакте и Telegram за последние три месяца. Какие темы повторяются у всех, а какие почти никто не закрывает. Со ссылками на источники.</p>
+      </div>
+      <p class="tx alt"><span class="lbl">То же самое умеют</span>ChatGPT с включённым поиском · Поиск с Алисой</p>
+    </div>
+
+    <div class="row">
+      <div class="row-top">
+        <div class="row-n">2</div>
+        <div class="row-t"><p class="st">Собрать рубрики и контент-план на месяц</p></div>
+        <span class="tool">ChatGPT</span>
+      </div>
+      <div class="prompt">
+        <span class="lbl">Что попросить</span>
+        <p class="tx">Я веду блог про <span class="fill">[тема]</span> для <span class="fill">[кто моя аудитория]</span>. Предложи 4 рубрики и распиши 12 постов на месяц: по три в неделю, рубрики чередуются. Для каждого поста – тема и одна фраза, о чём он.</p>
+      </div>
+      <p class="tx alt"><span class="lbl">То же самое умеют</span>DeepSeek · Qwen · ГигаЧат</p>
+    </div>
+
+    <div class="row">
+      <div class="row-top">
+        <div class="row-n">3</div>
+        <div class="row-t"><p class="st">Написать пост</p></div>
+        <span class="tool">ChatGPT · ГигаЧат</span>
+      </div>
+      <div class="prompt">
+        <span class="lbl">Что попросить</span>
+        <p class="tx">Напиши полезный пост по схеме: боль → ошибка → решение. Тема: <span class="fill">[...]</span>. Аудитория: <span class="fill">[...]</span>. Объём 1200 знаков, без канцелярита и восклицательных знаков. Дай три варианта первого абзаца на выбор.</p>
+      </div>
+      <p class="tx alt"><span class="lbl">То же самое умеют</span>DeepSeek · Qwen · Gemini</p>
+    </div>
+
+    <div class="row">
+      <div class="row-top">
+        <div class="row-n">4</div>
+        <div class="row-t"><p class="st">Придумать сценарий рилса или сторис</p></div>
+        <span class="tool">ChatGPT</span>
+      </div>
+      <div class="prompt">
+        <span class="lbl">Что попросить</span>
+        <p class="tx">Сделай сценарий вертикального видео на 30 секунд по посту ниже. Раскадровка: что говорю, что показываю, тайминг. Первые три секунды – крючок, дай три варианта крючка. Текст поста: <span class="fill">[...]</span></p>
+      </div>
+      <p class="tx alt"><span class="lbl">То же самое умеют</span>DeepSeek · ГигаЧат</p>
+    </div>
+
+    <div class="row">
+      <div class="row-top">
+        <div class="row-n">5</div>
+        <div class="row-t"><p class="st">Один пост – три площадки</p></div>
+        <span class="tool">ChatGPT</span>
+      </div>
+      <div class="prompt">
+        <span class="lbl">Что попросить</span>
+        <p class="tx">Вот мой пост для ВКонтакте. Сделай три версии: для Telegram – короче и с личным мнением; для MAX – экспертно и по делу; текст под 30-секундное видео. Смысл и мой тон сохрани. Пост: <span class="fill">[...]</span></p>
+      </div>
+      <p class="tx alt"><span class="lbl">То же самое умеют</span>ГигаЧат · DeepSeek · Qwen</p>
+    </div>
+
+    <div class="row">
+      <div class="row-top">
+        <div class="row-n">6</div>
+        <div class="row-t"><p class="st">Разобрать свои цифры</p></div>
+        <span class="tool">ChatGPT</span>
+      </div>
+      <div class="prompt">
+        <span class="lbl">Что попросить</span>
+        <p class="tx">Вот охваты и реакции моих десяти последних постов: <span class="fill">[таблица]</span>. Найди закономерность: какие темы и форматы заходят, какие проваливаются. Предложи три гипотезы, что попробовать дальше.</p>
+      </div>
+      <p class="tx alt"><span class="lbl">То же самое умеют</span>DeepSeek · Gemini</p>
+    </div>
+
+    <div class="row">
+      <div class="row-top">
+        <div class="row-n">7</div>
+        <div class="row-t"><p class="st">Изучить нишу и конкурентов</p></div>
+        <span class="tool">Perplexity</span>
+      </div>
+      <div class="prompt">
+        <span class="lbl">Что попросить</span>
+        <p class="tx">Кто сейчас заметные блогеры в нише <span class="fill">[...]</span> в русскоязычном сегменте? По каждому: площадка, примерный размер аудитории, о чём пишет, чем отличается. Обязательно со ссылками.</p>
+      </div>
+      <p class="tx alt"><span class="lbl">То же самое умеют</span>ChatGPT с включённым поиском · Поиск с Алисой</p>
+    </div>
+
+    <div class="row">
+      <div class="row-top">
+        <div class="row-n">8</div>
+        <div class="row-t"><p class="st">Сделать картинку или обложку к посту</p></div>
+        <span class="tool">ГигаЧат</span>
+      </div>
+      <div class="prompt">
+        <span class="lbl">Что попросить</span>
+        <p class="tx">Нарисуй обложку к посту про <span class="fill">[...]</span>. Вертикальная, светлый фон, минимализм, много воздуха, без текста на картинке.</p>
+      </div>
+      <p class="tx alt"><span class="lbl">То же самое умеют</span>Шедеврум · Qwen</p>
+    </div>
+
+    <div class="row">
+      <div class="row-top">
+        <div class="row-n">9</div>
+        <div class="row-t"><p class="st">Написать блогеру или бренду</p></div>
+        <span class="tool">ChatGPT</span>
+      </div>
+      <div class="prompt">
+        <span class="lbl">Что попросить</span>
+        <p class="tx">Напиши первое сообщение блогеру с предложением взаимного пиара. Мой блог: <span class="fill">[тема, площадка, N подписчиков]</span>. Его блог: <span class="fill">[...]</span>. Коротко, без лести, с конкретным предложением. 4–5 предложений.</p>
+      </div>
+      <p class="tx alt"><span class="lbl">То же самое умеют</span>ГигаЧат · DeepSeek</p>
+    </div>
+  </section>
+
+  <!-- ===== ТРИ ИНСТРУМЕНТА ===== -->
+  <section class="card">
+    <div class="sec-h">Три инструмента – и чем они отличаются</div>
+
+    <div class="tool-card">
+      <div class="tool-head">
+        <div class="tool-ic">✍️</div>
+        <div class="tool-name">
+          <p class="st">ChatGPT</p>
+          <span class="lbl">Рабочая лошадка</span>
+        </div>
+        <a class="go" href="https://chatgpt.com" target="_blank" rel="noopener">Открыть ↗</a>
+      </div>
+      <div class="kv"><div class="k"><span class="lbl">Для чего</span></div><div class="v"><p class="tx">Тексты, сценарии, контент-план, разбор цифр, письма и питчи.</p></div></div>
+      <div class="kv"><div class="k"><span class="lbl">Доступ</span></div><div class="v"><p class="tx">Нужен VPN и почта. Есть бесплатная версия, платная – около 20 $ в месяц.</p></div></div>
+      <div class="kv"><div class="k"><span class="lbl">Чем силён</span></div><div class="v"><p class="tx">Помнит вас между разговорами. Можно завести отдельный <b>«Проект»</b> под блог и один раз сложить туда рубрики, примеры своих постов и правила своего голоса – дальше не объяснять заново каждый день.</p></div></div>
+      <div class="kv"><div class="k"><span class="lbl">Честно</span></div><div class="v"><p class="tx">Без VPN не откроется, оплата – зарубежной картой.</p></div></div>
+    </div>
+
+    <div class="tool-card">
+      <div class="tool-head">
+        <div class="tool-ic">🔎</div>
+        <div class="tool-name">
+          <p class="st">Perplexity</p>
+          <span class="lbl">Исследование и факты</span>
+        </div>
+        <a class="go" href="https://www.perplexity.ai" target="_blank" rel="noopener">Открыть ↗</a>
+      </div>
+      <div class="kv"><div class="k"><span class="lbl">Для чего</span></div><div class="v"><p class="tx">Изучить нишу, посмотреть конкурентов, поймать тренд, собрать факты для экспертного поста.</p></div></div>
+      <div class="kv"><div class="k"><span class="lbl">Доступ</span></div><div class="v"><p class="tx">Открывается из России. Для этих задач хватает бесплатной версии.</p></div></div>
+      <div class="kv"><div class="k"><span class="lbl">Чем силён</span></div><div class="v"><p class="tx">Не сочиняет из головы, а ищет в интернете и <b>даёт ссылки на источники</b> – их видно и можно проверить.</p></div></div>
+      <div class="kv"><div class="k"><span class="lbl">Честно</span></div><div class="v"><p class="tx">Тексты пишет суховато. Берите оттуда факты, а пост пишите в другом месте.</p></div></div>
+    </div>
+
+    <div class="tool-card">
+      <div class="tool-head">
+        <div class="tool-ic">🇷🇺</div>
+        <div class="tool-name">
+          <p class="st">ГигаЧат</p>
+          <span class="lbl">Российский, без VPN</span>
+        </div>
+        <a class="go" href="https://giga.chat" target="_blank" rel="noopener">Открыть ↗</a>
+      </div>
+      <div class="kv"><div class="k"><span class="lbl">Для чего</span></div><div class="v"><p class="tx">Черновики постов, переписать текст, картинки и обложки.</p></div></div>
+      <div class="kv"><div class="k"><span class="lbl">Доступ</span></div><div class="v"><p class="tx">giga.chat, вход по номеру телефона или через Сбер, бесплатно.</p></div></div>
+      <div class="kv"><div class="k"><span class="lbl">Чем силён</span></div><div class="v"><p class="tx">Ничего не нужно настраивать – работает сразу, с телефона. Картинки генерирует прилично: обложку к посту сделать можно.</p></div></div>
+      <div class="kv"><div class="k"><span class="lbl">Честно</span></div><div class="v"><p class="tx">Это чат и генератор картинок. Проектов, помощников и памяти о вас там пока нет – для длинной системной работы придётся вернуться в ChatGPT.</p></div></div>
+    </div>
+
+    <div class="tip">
+      <div class="ti">💡</div>
+      <p class="tx"><b>С чего начать, если пробуете впервые.</b> Откройте ГигаЧат – он не требует ни VPN, ни карты. Когда почувствуете, что упираетесь в потолок, переходите на ChatGPT.</p>
+    </div>
+  </section>
+
+  <!-- ===== СМЕЖНЫЕ ===== -->
+  <section class="card">
+    <div class="sec-h">Смежные: делают то же самое</div>
+    <p class="tx">Задача важнее названия сервиса. Если ChatGPT не открылся или закончился лимит – те же девять задач закроются здесь. Промпты из карты подходят без переделки.</p>
+
+    <div class="swap-grid">
+      <div class="swap">
+        <p class="st">DeepSeek</p>
+        <span class="lbl">Вместо ChatGPT для текста</span>
+        <p class="tx">Тексты, планы, разборы цифр. Работает из России, бесплатно. Хорошо рассуждает и показывает ход мысли.</p>
+        <a class="go" href="https://chat.deepseek.com" target="_blank" rel="noopener">Открыть ↗</a>
+      </div>
+      <div class="swap">
+        <p class="st">Qwen</p>
+        <span class="lbl">Вместо ChatGPT и для картинок</span>
+        <p class="tx">Тексты и генерация изображений в одном месте. Из России открывается, бесплатно.</p>
+        <a class="go" href="https://chat.qwen.ai" target="_blank" rel="noopener">Открыть ↗</a>
+      </div>
+      <div class="swap">
+        <p class="st">Gemini</p>
+        <span class="lbl">Вместо ChatGPT</span>
+        <p class="tx">Сильна в работе с видео и картинками: можно загрузить своё видео и попросить разбор. Нужен VPN.</p>
+        <a class="go" href="https://gemini.google.com" target="_blank" rel="noopener">Открыть ↗</a>
+      </div>
+      <div class="swap">
+        <p class="st">Поиск с Алисой</p>
+        <span class="lbl">Вместо Perplexity</span>
+        <p class="tx">Быстрый поиск по интернету со ссылками, по-русски и с телефона. Для беглой проверки факта – хватает.</p>
+        <a class="go" href="https://ya.ru/neuro-search/" target="_blank" rel="noopener">Открыть ↗</a>
+      </div>
+      <div class="swap">
+        <p class="st">Шедеврум</p>
+        <span class="lbl">Вместо ГигаЧата для картинок</span>
+        <p class="tx">Картинки и обложки. Российский, бесплатный, приложение на телефоне.</p>
+        <a class="go" href="https://shedevrum.ai" target="_blank" rel="noopener">Открыть ↗</a>
+      </div>
+      <div class="swap">
+        <p class="st">Правило выбора</p>
+        <span class="lbl">Если растерялись</span>
+        <p class="tx">Берите тот, который открывается без VPN и не просит карту. Разница между ними для задач из карты меньше, чем кажется.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== СВОЙ ГОЛОС ===== -->
+  <section class="card">
+    <div class="sec-h">Чтобы текст звучал вами, а не нейросетью</div>
+    <p class="tx">Главная причина «пластиковых» текстов – нейросеть не знает, как вы пишете. Пока вы не показали, она выдаёт усреднённое.</p>
+
+    <div class="pair">
+      <div class="pair-box">
+        <span class="lbl">Как не надо</span>
+        <p class="tx">«Напиши пост про утреннюю зарядку».</p>
+        <p class="tx">Получите гладкий безликий текст, который узнают за секунду.</p>
+      </div>
+      <div class="pair-box good">
+        <span class="lbl">Как надо</span>
+        <p class="tx">«Вот три моих поста. Разбери, как я пишу: длина фраз, любимые слова и обороты, чего я никогда не делаю. Дальше пиши в этой манере».</p>
+        <p class="tx">И вставьте три своих настоящих поста.</p>
+      </div>
+    </div>
+
+    <ol class="bul num">
+      <li><b>Уберите слова, которые не говорите вслух:</b> «данный», «является», «в современном мире», «не секрет, что».</li>
+      <li><b>Верните одну свою деталь</b> – что было на самом деле, в какой день, что вы почувствовали.</li>
+      <li><b>Разбейте гладкие длинные предложения.</b> Живая речь рваная.</li>
+      <li><b>Прочитайте вслух.</b> Споткнулись – переписывайте это место.</li>
+    </ol>
+
+    <div class="key" style="margin-top:18px;margin-bottom:0;">
+      <p class="tx"><b>Нейросеть пишет черновик, вы пишете финал. Не наоборот.</b></p>
+    </div>
+  </section>
+
+  <!-- ===== СТОП-ЛИСТ ===== -->
+  <section class="card">
+    <div class="sec-h">Что не стоит поручать нейросети</div>
+
+    <div class="stop">
+      <div class="stop-ic">🔢</div>
+      <div>
+        <p class="st">Цифры и факты</p>
+        <p class="tx">Нейросеть уверенно придумывает: цену, дату, исследование, состав. Всё, что можно проверить, – проверяйте.</p>
+      </div>
+    </div>
+    <div class="stop">
+      <div class="stop-ic">⚖️</div>
+      <div>
+        <p class="st">Юридическое</p>
+        <p class="tx">Маркировка рекламы, реестр РКН, договор с брендом. Ошибка стоит штрафа, а нейросеть за него не отвечает. Сверяйтесь с официальными требованиями, а не с ответом в чате.</p>
+      </div>
+    </div>
+    <div class="stop">
+      <div class="stop-ic">❤️</div>
+      <div>
+        <p class="st">Личные истории</p>
+        <p class="tx">То, ради чего вас читают. Придуманная история чувствуется.</p>
+      </div>
+    </div>
+    <div class="stop">
+      <div class="stop-ic">📘</div>
+      <div>
+        <p class="st">Факты о FitStars</p>
+        <p class="tx">Тренировки, программы, условия – только из официальных материалов.</p>
+      </div>
+    </div>
+    <div class="stop">
+      <div class="stop-ic">💬</div>
+      <div>
+        <p class="st">Ответ подписчику на больное</p>
+        <p class="tx">Если человек пишет о своём – отвечайте сами.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ЧЕК-ЛИСТ ===== -->
+  <section class="card">
+    <div class="sec-h">Чек-лист: начать сегодня</div>
+    <div class="progress-top">
+      <span class="lbl">Прогресс</span>
+      <span class="lbl" id="cnt">0 / 6 шагов</span>
+    </div>
+    <div class="bar"><span id="bar"></span></div>
+
+    <div class="steps" id="steps">
+      <div class="step"><div class="check"><svg viewBox="0 0 24 24"><polyline points="4 12 10 18 20 6"/></svg></div>
+        <div class="step-b"><p class="st">Выбрать из карты одну задачу</p><p class="tx">Ту, которая мешает прямо сейчас. Не «весь блог сразу».</p></div></div>
+      <div class="step"><div class="check"><svg viewBox="0 0 24 24"><polyline points="4 12 10 18 20 6"/></svg></div>
+        <div class="step-b"><p class="st">Открыть ГигаЧат и прогнать её промпт</p><p class="tx">Сегодня, без VPN и без оплаты.</p></div></div>
+      <div class="step"><div class="check"><svg viewBox="0 0 24 24"><polyline points="4 12 10 18 20 6"/></svg></div>
+        <div class="step-b"><p class="st">Переписать черновик своими словами</p><p class="tx">И сравнить с тем, что выдала нейросеть. Разница и есть ваш голос.</p></div></div>
+      <div class="step"><div class="check"><svg viewBox="0 0 24 24"><polyline points="4 12 10 18 20 6"/></svg></div>
+        <div class="step-b"><p class="st">Сохранить промпт, который сработал</p><p class="tx">Это первая строчка вашего банка промптов.</p></div></div>
+      <div class="step"><div class="check"><svg viewBox="0 0 24 24"><polyline points="4 12 10 18 20 6"/></svg></div>
+        <div class="step-b"><p class="st">Не брать второй инструмент, пока первый не стал привычкой</p><p class="tx">Пять сервисов сразу – это пять брошенных вкладок.</p></div></div>
+      <div class="step"><div class="check"><svg viewBox="0 0 24 24"><polyline points="4 12 10 18 20 6"/></svg></div>
+        <div class="step-b"><p class="st">Проверить всё проверяемое</p><p class="tx">Цифры, даты, названия, ссылки.</p></div></div>
+    </div>
+  </section>
+
+  <!-- ===== КУДА РАСТИ ===== -->
+  <section class="card">
+    <div class="sec-h">Куда расти дальше</div>
+    <p class="tx">Всё, что выше, – это разговор: вы спрашиваете, нейросеть отвечает, вы копируете результат руками. Следующий горизонт – когда она <b>сама что-то делает</b>. Смотреть туда стоит, когда блог уже идёт и рутина стала объёмной.</p>
+
+    <div class="grow">
+      <div class="grow-ic">📁</div>
+      <div>
+        <p class="st">Работает с файлами прямо на вашем компьютере</p>
+        <p class="tx">Не «скопируйте текст в чат», а «разбери эту папку с расшифровками и собери из них черновики постов». Нейросеть открывает файлы, читает, создаёт новые.</p>
+        <p class="tx names"><span class="lbl">Например</span>Claude Code · ChatGPT Work</p>
+      </div>
+    </div>
+
+    <div class="grow">
+      <div class="grow-ic">🧭</div>
+      <div>
+        <p class="st">Браузер, который действует за вас</p>
+        <p class="tx">Открывает сайты, собирает данные из нескольких вкладок, заполняет формы. Полезно, когда надо обойти двадцать аккаунтов конкурентов и свести всё в таблицу.</p>
+        <p class="tx names"><span class="lbl">Например</span>Comet от Perplexity</p>
+      </div>
+    </div>
+
+    <div class="grow">
+      <div class="grow-ic">🤖</div>
+      <div>
+        <p class="st">Агенты: работают без вас, 24/7</p>
+        <p class="tx">Живут на сервере или на вашем компьютере и общаются с вами через Telegram. Утренний отчёт по метрикам, черновики ответов на частые вопросы, сбор комментариев со всех площадок в один файл.</p>
+        <p class="tx names"><span class="lbl">Например</span>OpenClaw · Hermes Agent · готовые агенты в Telegram</p>
+      </div>
+    </div>
+
+    <div class="tip">
+      <div class="ti">⚠️</div>
+      <p class="tx"><b>Честно про этот уровень.</b> Это не «включил и забыл»: агента нужно настроить, а иногда и оплатить сервер. Работает правило <b>одна задача – один агент</b>: чем больше на него навесить, тем быстрее он путается. И доступы давайте минимальные – только то, без чего задача не решается. Сначала освойте три инструмента с карты.</p>
+    </div>
+  </section>
+
+  <div class="final">
+    <h3>Карта не работает, если её просто сохранить</h3>
+    <p class="tx">Выберите <b>одну задачу</b> и сделайте её через нейросеть сегодня.</p>
+    <p class="tx">Карта показывает, чем что делать. Как встроить это в живой блог – от первого поста до первых денег – разбираем на курсе <b>«Блогер с нуля»</b>: там ИИ занимает отдельную неделю.</p>
+  </div>
+
+  <div class="foot"><span class="lbl">FitStars · гайд для начинающего блогера</span></div>
+
+</div>
+
+<script>
+  (function(){
+    var steps = Array.prototype.slice.call(document.querySelectorAll('#steps .step'));
+    var bar = document.getElementById('bar');
+    var cnt = document.getElementById('cnt');
+    function word(n){ return n===1 ? 'шаг' : (n>=2 && n<=4 ? 'шага' : 'шагов'); }
+    function sync(){
+      var done = steps.filter(function(s){ return s.classList.contains('done'); }).length;
+      bar.style.width = (done / steps.length * 100) + '%';
+      cnt.textContent = done + ' / ' + steps.length + ' ' + word(steps.length);
+    }
+    steps.forEach(function(s){
+      s.addEventListener('click', function(){ s.classList.toggle('done'); sync(); });
+    });
+    sync();
+  })();
+</script>
+</body>
+</html>
