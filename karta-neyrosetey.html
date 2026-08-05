@@ -114,14 +114,14 @@
   /* ---------- ОБЗОР: дополнительные ---------- */
   .sub-title{margin-top:28px;display:flex;align-items:center;gap:10px;}
   .sub-title::after{content:'';flex:1;height:1px;background:var(--line);}
-  .sub-grid{display:flex;flex-wrap:wrap;gap:9px;margin-top:14px;}
+  .sub-list{display:flex;flex-direction:column;gap:8px;margin-top:14px;}
   .sub{
-    display:flex;align-items:center;gap:10px;border:1px solid var(--line);
-    border-radius:var(--r-pill);padding:8px 8px 8px 16px;background:var(--bg);
+    display:flex;align-items:center;gap:12px;border:1px solid var(--line);
+    border-radius:var(--r-md);padding:12px 12px 12px 16px;background:var(--bg);
   }
-  .sub .nm{font-size:14px;font-weight:700;color:var(--ink);}
-  .sub .rl{font-size:13px;font-weight:500;color:var(--ink-3);}
-  .sub .go{padding:7px 12px;}
+  .sub .nm{font-size:14.5px;font-weight:700;color:var(--ink);min-width:118px;}
+  .sub .rl{flex:1;font-size:14px;font-weight:500;color:var(--ink-2);}
+  .sub .go{padding:8px 13px;}
 
   /* ---------- ОБЗОР: задачи ---------- */
   .task-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:14px;}
@@ -200,9 +200,10 @@
   .step.done .st{color:var(--ink-3);text-decoration:line-through;text-decoration-color:var(--line-2);}
 
   /* ---------- Куда расти ---------- */
-  .grow{display:flex;gap:13px;margin-top:16px;}
-  .grow-ic{flex-shrink:0;width:34px;height:34px;border-radius:10px;background:var(--accent-soft);
-    display:flex;align-items:center;justify-content:center;font-size:16px;}
+  .grow{display:flex;gap:13px;margin-top:18px;}
+  .grow-ic{flex-shrink:0;width:32px;height:32px;border-radius:50%;background:var(--accent);
+    color:var(--accent-ink);display:flex;align-items:center;justify-content:center;
+    font-family:var(--display);font-weight:700;font-size:13px;}
   .grow .st{margin-bottom:3px;}
   .grow .names{margin-top:6px;}
   .grow .names .lbl{margin-right:8px;}
@@ -221,7 +222,20 @@
   .final .tx{color:#c9cbc2;max-width:46ch;margin:0 auto;}
   .final .tx + .tx{margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,.14);}
   .final .tx b{color:var(--accent);}
+  /* ---------- Контакты ---------- */
+  .contacts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:18px;}
+  .contact{
+    display:flex;align-items:center;gap:12px;background:var(--bg-soft);
+    border:1px solid transparent;border-radius:var(--r-md);padding:15px 16px;
+    transition:border-color .16s,background .16s;
+  }
+  .contact:hover{background:var(--accent-soft);border-color:var(--accent-2);}
+  .c-ic{flex-shrink:0;font-size:17px;}
+  .c-body{display:flex;flex-direction:column;gap:2px;min-width:0;}
+  .c-body .tx{overflow-wrap:anywhere;}
+
   .foot{text-align:center;margin-top:22px;}
+  .disclaimer{max-width:64ch;margin:0 auto 14px;color:var(--ink-3);}
 
   /* ---------- Адаптив ---------- */
   @media(max-width:760px){
@@ -229,6 +243,7 @@
     .task-grid{grid-template-columns:1fr 1fr;}
     .stop-grid{grid-template-columns:1fr;}
     .pair{grid-template-columns:1fr;}
+    .contacts{grid-template-columns:1fr;}
   }
   @media(max-width:520px){
     .card{padding-bottom:22px;}
@@ -238,8 +253,9 @@
     .task-grid{grid-template-columns:1fr;}
     .row-t{min-width:calc(100% - 40px);}
     .row-tool{margin-left:40px;}
-    .sub{width:100%;}
-    .sub .nm{flex:1;}
+    .sub{flex-wrap:wrap;gap:8px;}
+    .sub .nm{min-width:0;flex:1;}
+    .sub .rl{flex:1 0 100%;order:3;}
   }
   @media print{
     body{background:#fff;}
@@ -258,10 +274,10 @@
     <h1>Карта нейросетей: <em>какая под какую задачу</em> блога</h1>
     <p class="tx">Нейросеть не ведёт блог за вас. Она снимает черновую работу – ту, на которую уходит вечер, а ценности в ней ноль.</p>
     <div class="chips">
-      <span class="chip">3 основные + 5 запасных</span>
+      <span class="chip">3 основные + 6 запасных</span>
       <span class="chip">9 задач блога</span>
       <span class="chip">Готовые промпты</span>
-      <span class="chip">8 минут</span>
+      <span class="chip">4 ступени автоматизации</span>
     </div>
   </div>
 </header>
@@ -272,40 +288,46 @@
   <section class="card">
     <div class="sec-h"><span class="n">1</span> Чем будем работать</div>
 
-    <p class="tx lead-tx">Три нейросети закрывают почти всё, что нужно блогеру. Начните с той, что бесплатная и открывается без VPN.</p>
+    <p class="tx lead-tx">Три нейросети закрывают почти всё, что нужно блогеру. Начните с ГигаЧата: он единственный открывается из России без VPN и не просит карту.</p>
 
     <div class="main-grid">
       <div class="mt free">
         <div class="mt-ic">🇷🇺</div>
         <p class="st">ГигаЧат</p>
         <p class="tx">Черновики постов и картинки к ним. Работает сразу, с телефона.</p>
-        <div class="mt-badges"><span class="badge hot">Без VPN</span><span class="badge">Бесплатно</span></div>
+        <div class="mt-badges"><span class="badge hot">Открывается из России</span><span class="badge">Бесплатно</span></div>
         <a class="go" href="https://giga.chat" target="_blank" rel="noopener">Открыть ↗</a>
       </div>
       <div class="mt">
         <div class="mt-ic">✍️</div>
         <p class="st">ChatGPT</p>
         <p class="tx">Рабочая лошадка: тексты, сценарии, планы, разбор цифр. Помнит вас между разговорами.</p>
-        <div class="mt-badges"><span class="badge dim">Нужен VPN</span><span class="badge">Есть бесплатный</span></div>
+        <div class="mt-badges"><span class="badge dim">Нужен VPN</span><span class="badge dim">И зарубежный номер</span><span class="badge">Есть бесплатный</span></div>
         <a class="go" href="https://chatgpt.com" target="_blank" rel="noopener">Открыть ↗</a>
       </div>
       <div class="mt">
         <div class="mt-ic">🔎</div>
         <p class="st">Perplexity</p>
-        <p class="tx">Ищет в интернете и даёт ссылки на источники. Ниша, конкуренты, тренды, факты.</p>
-        <div class="mt-badges"><span class="badge hot">Без VPN</span><span class="badge">Есть бесплатный</span></div>
+        <p class="tx">Ищет в интернете и даёт ссылки на источники. Ниша, конкуренты, тренды, проверка фактов.</p>
+        <div class="mt-badges"><span class="badge">Обычно открывается</span><span class="badge">Есть бесплатный</span></div>
         <a class="go" href="https://www.perplexity.ai" target="_blank" rel="noopener">Открыть ↗</a>
       </div>
     </div>
 
     <div class="sub-title"><span class="lbl">Запасные – делают то же самое</span></div>
-    <p class="tx">Если основная не открылась или закончился лимит – промпты из карты подходят без переделки.</p>
-    <div class="sub-grid">
-      <span class="sub"><span class="nm">DeepSeek</span><span class="rl">вместо ChatGPT</span><a class="go" href="https://chat.deepseek.com" target="_blank" rel="noopener">↗</a></span>
-      <span class="sub"><span class="nm">Qwen</span><span class="rl">текст и картинки</span><a class="go" href="https://chat.qwen.ai" target="_blank" rel="noopener">↗</a></span>
-      <span class="sub"><span class="nm">Gemini</span><span class="rl">сильна в видео</span><a class="go" href="https://gemini.google.com" target="_blank" rel="noopener">↗</a></span>
-      <span class="sub"><span class="nm">Поиск с Алисой</span><span class="rl">вместо Perplexity</span><a class="go" href="https://ya.ru/neuro-search/" target="_blank" rel="noopener">↗</a></span>
-      <span class="sub"><span class="nm">Шедеврум</span><span class="rl">картинки</span><a class="go" href="https://shedevrum.ai" target="_blank" rel="noopener">↗</a></span>
+    <p class="tx">Если основная не открылась или закончился лимит – берите запасную. Промпты из карты подходят без переделки.</p>
+    <div class="sub-list">
+      <div class="sub"><span class="nm">DeepSeek</span><span class="rl">вместо ChatGPT: тексты, планы, разбор цифр</span><span class="badge">Обычно открывается</span><a class="go" href="https://chat.deepseek.com" target="_blank" rel="noopener">↗</a></div>
+      <div class="sub"><span class="nm">Qwen</span><span class="rl">текст и картинки в одном месте</span><span class="badge">Обычно открывается</span><a class="go" href="https://chat.qwen.ai" target="_blank" rel="noopener">↗</a></div>
+      <div class="sub"><span class="nm">Шедеврум</span><span class="rl">картинки от Яндекса, приложение на телефоне</span><span class="badge">Обычно открывается</span><a class="go" href="https://shedevrum.ai" target="_blank" rel="noopener">↗</a></div>
+      <div class="sub"><span class="nm">Поиск с Алисой</span><span class="rl">вместо Perplexity: быстрый ответ со ссылками</span><span class="badge">Обычно открывается</span><a class="go" href="https://ya.ru/neuro-search/" target="_blank" rel="noopener">↗</a></div>
+      <div class="sub"><span class="nm">Claude</span><span class="rl">лучше всех держит ваш голос в длинных текстах</span><span class="badge dim">Доступ самый сложный</span><a class="go" href="https://claude.ai" target="_blank" rel="noopener">↗</a></div>
+      <div class="sub"><span class="nm">Gemini</span><span class="rl">от Google, разбирает картинки, файлы и видео</span><span class="badge dim">Нужен VPN</span><a class="go" href="https://gemini.google.com" target="_blank" rel="noopener">↗</a></div>
+    </div>
+
+    <div class="tip">
+      <div class="ti">🔌</div>
+      <p class="tx"><b>Про доступ честно.</b> Он меняется чуть ли не помесячно: сегодня сервис открывается, завтра просит VPN. Железно работает из России только ГигаЧат. У Claude сложнее всех: российский номер не принимают и подписку из России не оплатить. Не открылось – не воюйте, берите запасную из списка.</p>
     </div>
 
     <div class="sub-title"><span class="lbl">Что вы сможете закрыть</span></div>
@@ -418,8 +440,9 @@
         <span class="badge row-tool">ГигаЧат</span>
       </div>
       <details><summary>Промпт</summary><div class="det-body">
-        <div class="prompt"><p class="tx">Нарисуй обложку к посту про <span class="fill">[...]</span>. Вертикальная, светлый фон, минимализм, много воздуха, без текста на картинке.</p></div>
+        <div class="prompt"><p class="tx">Нарисуй обложку к посту про <span class="fill">[...]</span>. Светлый фон, минимализм, много воздуха, без текста на картинке.</p></div>
         <p class="tx alt"><span class="lbl">Ещё умеют</span>Шедеврум · Qwen</p>
+        <p class="tx alt"><span class="lbl">Важно</span>ГигаЧат рисует только квадрат. Нужна вертикаль под сторис – идите в Шедеврум или Qwen, там пропорции задаются.</p>
       </div></details>
     </div>
 
@@ -470,7 +493,7 @@
     <div class="stop-grid">
       <div class="stop"><div class="stop-ic">🔢</div><div>
         <p class="st">Цифры и факты</p>
-        <p class="tx">Придумывает уверенно. Проверяйте всё проверяемое.</p></div></div>
+        <p class="tx">Придумывает уверенно и без запинки. Особенно опасны точные цифры, даты и «исследования».</p></div></div>
       <div class="stop"><div class="stop-ic">⚖️</div><div>
         <p class="st">Юридическое</p>
         <p class="tx">Маркировка, реестр, договор. Ошибка стоит штрафа – сверяйтесь с официальными требованиями.</p></div></div>
@@ -481,6 +504,13 @@
         <p class="st">Ответ подписчику на больное</p>
         <p class="tx">Пишет о своём – отвечайте сами.</p></div></div>
     </div>
+
+    <div class="sub-title"><span class="lbl">Как проверить за минуту</span></div>
+    <ul class="bul">
+      <li><b>Спросите, откуда это.</b> «На чём основан ответ? Дай ссылки на источники». Если ссылок нет или они не открываются – факта тоже нет.</li>
+      <li><b>Перепроверьте в Perplexity.</b> Она ищет в интернете и показывает источники: скопируйте туда спорное утверждение и попросите подтвердить или опровергнуть.</li>
+      <li><b>Правило для постов:</b> цифру, дату и название бренда либо проверили сами, либо убрали из текста. Третьего нет – отвечать за пост будете вы.</li>
+    </ul>
   </section>
 
   <!-- ===== 5. ЧЕК-ЛИСТ ===== -->
@@ -507,47 +537,78 @@
 
   <!-- ===== 6. КУДА РАСТИ ===== -->
   <section class="card">
-    <div class="sec-h"><span class="n">6</span> Куда расти дальше</div>
-    <p class="tx lead-tx">Всё, что выше, – разговор: вы спрашиваете, вы копируете ответ руками. Следующий горизонт – когда нейросеть <b>сама что-то делает</b>.</p>
+    <div class="sec-h"><span class="n">6</span> Автоматизация: перестать делать руками</div>
+    <p class="tx lead-tx">Всё, что выше, – разговор: вы спросили, скопировали ответ, вставили в пост. Автоматизация начинается там, где вы перестаёте копировать. Четыре ступени, от самой простой к самой сложной.</p>
 
     <div class="grow">
-      <div class="grow-ic">📁</div>
+      <div class="grow-ic">1</div>
       <div>
-        <p class="st">Работает с файлами на вашем компьютере</p>
-        <p class="tx">«Разбери папку с расшифровками и собери из них черновики постов».</p>
-        <p class="tx names"><span class="lbl">Например</span>Claude Code · ChatGPT Work</p>
+        <p class="st">Помощник, который уже знает ваш блог</p>
+        <p class="tx">Самое доступное и самое недооценённое. В ChatGPT заводите отдельный «Проект» под блог и один раз кладёте туда рубрики, три своих поста как образец голоса и правила («не пишу восклицательными, обращаюсь на ты»). Дальше вместо простыни на десять строк вы пишете «пост про растяжку по вторничной рубрике» – и он уже всё знает.</p>
+        <p class="tx names"><span class="lbl">Сколько стоит</span>Ничего. Настройка – один вечер, экономия – каждый день</p>
       </div>
     </div>
     <div class="grow">
-      <div class="grow-ic">🧭</div>
+      <div class="grow-ic">2</div>
       <div>
-        <p class="st">Браузер, который действует за вас</p>
-        <p class="tx">Обойти двадцать аккаунтов конкурентов и свести всё в таблицу.</p>
-        <p class="tx names"><span class="lbl">Например</span>Comet от Perplexity</p>
+        <p class="st">Повторяющаяся цепочка одной командой</p>
+        <p class="tx">У блогера каждая неделя одинаковая: расшифровать голосовое → сделать пост → нарезать под три площадки → придумать обложку. Это описывается один раз как последовательность шагов, и дальше запускается фразой «сделай недельный пакет из этого голосового».</p>
+        <p class="tx names"><span class="lbl">Где</span>Проекты в ChatGPT · Claude</p>
       </div>
     </div>
     <div class="grow">
-      <div class="grow-ic">🤖</div>
+      <div class="grow-ic">3</div>
       <div>
-        <p class="st">Агенты: работают без вас, 24/7</p>
-        <p class="tx">Утренний отчёт по метрикам в Telegram, сбор комментариев со всех площадок в один файл.</p>
+        <p class="st">Работа с вашими файлами и сайтами напрямую</p>
+        <p class="tx">Нейросеть открывает папку у вас на компьютере: «разбери расшифровки за месяц и собери из них черновики постов». Или ходит по сайтам сама: обойти двадцать аккаунтов конкурентов и свести в таблицу, кто что публикует.</p>
+        <p class="tx names"><span class="lbl">Например</span>Claude Code · ChatGPT Work · браузер Comet от Perplexity</p>
+      </div>
+    </div>
+    <div class="grow">
+      <div class="grow-ic">4</div>
+      <div>
+        <p class="st">Агент: работает без вас, 24/7</p>
+        <p class="tx">Живёт на сервере или на вашем компьютере, пишет вам в Telegram. Утренний отчёт по метрикам, пока вы пьёте кофе. Черновики ответов на частые вопросы в директ. Сбор комментариев со всех площадок в один файл.</p>
         <p class="tx names"><span class="lbl">Например</span>OpenClaw · Hermes Agent</p>
       </div>
     </div>
 
     <div class="tip">
       <div class="ti">⚠️</div>
-      <p class="tx"><b>Это не «включил и забыл».</b> Агента нужно настроить, работает правило <b>одна задача – один агент</b>, доступы давайте минимальные. Сначала освойте три основные.</p>
+      <p class="tx"><b>Не начинайте с четвёртой ступени.</b> Агент – это не «включил и забыл»: его нужно настроить, а иногда и оплатить сервер. Работает правило <b>одна задача – один агент</b>: чем больше на него навесить, тем быстрее он путается. Доступы давайте минимальные – только то, без чего задача не решается. Первая ступень даёт восемьдесят процентов выигрыша и стоит один вечер.</p>
     </div>
   </section>
 
   <div class="final">
     <h3>Карта не работает, если её просто сохранить</h3>
     <p class="tx">Выберите <b>одну задачу</b> и сделайте её через нейросеть сегодня.</p>
-    <p class="tx">Как встроить это в живой блог – от первого поста до первых денег – разбираем на курсе <b>«Блогер с нуля»</b>: там ИИ занимает отдельную неделю.</p>
+    <p class="tx">Как встроить это в живой блог – от первого поста до первых денег – разбираем на курсе <b>«Блогер с нуля»</b>: работе с ИИ там посвящён отдельный бонусный модуль.</p>
   </div>
 
-  <div class="foot"><span class="lbl">FitStars · гайд для начинающего блогера</span></div>
+  <!-- ===== ОТДЕЛ ЗАБОТЫ ===== -->
+  <section class="card">
+    <div class="sec-h">Не получилось – напишите нам</div>
+    <p class="tx lead-tx">Отдел заботы подскажет по курсу и по этому гайду. Отвечаем ежедневно, 10:00–20:00 по Москве.</p>
+    <div class="contacts">
+      <a class="contact" href="https://t.me/zabota_kurs" target="_blank" rel="noopener">
+        <span class="c-ic">✈️</span>
+        <span class="c-body"><span class="st">Telegram</span><span class="tx">@zabota_kurs</span></span>
+      </a>
+      <a class="contact" href="https://max.ru/u/f9LHodD0cOLBNUlz52g1kNrr_QRGfwKKW8ds68GRBNXrQWYT17Pvb36qD4w" target="_blank" rel="noopener">
+        <span class="c-ic">💬</span>
+        <span class="c-body"><span class="st">MAX</span><span class="tx">Написать в мессенджер</span></span>
+      </a>
+      <a class="contact" href="mailto:info@influencerexpert.ru">
+        <span class="c-ic">✉️</span>
+        <span class="c-body"><span class="st">Почта</span><span class="tx">info@influencerexpert.ru</span></span>
+      </a>
+    </div>
+  </section>
+
+  <div class="foot">
+    <p class="tx disclaimer">Данные по инструментам, доступам и ценам актуальны на август 2026 года. Нейросети меняются быстро: условия входа, лимиты и возможности могут стать другими, а промпты – потребовать правки под новую версию сервиса. Если что-то из карты не сработало, загляните в раздел с запасными или напишите в отдел заботы.</p>
+    <span class="lbl">FitStars · гайд для начинающего блогера</span>
+  </div>
 
 </div>
 
